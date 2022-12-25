@@ -33,7 +33,7 @@ def load_level(filename):
 
 
 """def generate_level(level, vars):
-    #from main import Tile, Player
+    #from main import Tile, Pivot_point
     h = len(level)
     w = len(level[0])
     new_player, x, y = None, None, None
@@ -45,5 +45,5 @@ def load_level(filename):
                 Tile('wall', x, y, vars)
             elif level[y][x] == '@':
                 Tile('empty', x, y, vars)
-                new_player = Player(x, y, vars)
+                new_player = Pivot_point(x, y, vars)
     return new_player, w, h"""
