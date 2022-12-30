@@ -7,7 +7,7 @@ def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'images', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
+        terminate()
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -26,14 +26,17 @@ def terminate():
 
 def load_level(filename):
     filename = os.path.join('data', 'levels', filename)
+    if not os.path.isfile(filename):
+        print(f"Файл с картой уровня '{filename}' не найден")
+        terminate()
     with open(filename, 'r') as mapFile:
         level_map = [line.rstrip() for line in mapFile]
     max_width = max(map(len, level_map))
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
-"""def generate_level(level, vars):
-    #from main import Tile, Pivot_point
+def generate_level(level, vars):
+    from main import Tile, Player
     h = len(level)
     w = len(level[0])
     new_player, x, y = None, None, None
@@ -45,5 +48,5 @@ def load_level(filename):
                 Tile('wall', x, y, vars)
             elif level[y][x] == '@':
                 Tile('empty', x, y, vars)
-                new_player = Pivot_point(x, y, vars)
-    return new_player, w, h"""
+                new_player = Player(x, y, vars)
+    return new_player, w, h

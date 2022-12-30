@@ -1,5 +1,5 @@
 class Camera:
-    SPEED_COEFF = 0.1
+    SPEED_COEFF = 0.05
 
     # зададим начальный сдвиг камеры
     def __init__(self, width, height):

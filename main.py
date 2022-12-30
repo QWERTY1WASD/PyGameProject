@@ -1,33 +1,41 @@
 import pygame
-from board import Board
-from utils import terminate
+from utils import load_image, terminate, generate_level, load_level
+from startscreen import start_screen
 from camera import Camera
 
-FPS = 60
-CELL_SIZE = 50
-SIZE = WIDTH, HEIGHT = 1280, 720
-TEXT_SCALE = 1
+FPS = 50
+SIZE = WIDTH, HEIGHT = 1260, 720
+TILE_WIDTH = TILE_HEIGHT = 50
+BACKGROUND_COLOR = (0, 0, 0)
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
-pygame.display.set_caption('Battlefront')
+pygame.display.set_caption('BattleFront')
+player = None
 clock = pygame.time.Clock()
 
-BACKGROUND = pygame.Color('black')
+
+tile_images = {
+    'wall': load_image('box.png'),
+    'empty': load_image('grass.png')
+}
+obstacles = {'wall'}
+player_image = load_image('mario.png')
 
 
-class Field(Board):
-    def __init__(self, width, height, **kwargs):
-        super().__init__(width, height, **kwargs)
-        self.board = [0 * width for _ in range(height)]
-        self.font = pygame.font.Font(None, int(round(CELL_SIZE * TEXT_SCALE)))
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y, vars):
+        super().__init__(vars['tiles_group'], vars['all_sprites'])
+        if tile_type in obstacles:
+            vars['obstacles_group'].add(self)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
 
-    def on_click(self, cell_coords):
-        print(cell_coords)
 
-
-class Pivot_point(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, vars):
         super().__init__(vars['player_group'], vars['all_sprites'])
+        self.image = player_image
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * pos_x + (TILE_WIDTH - self.image.get_width()) // 2,
             TILE_HEIGHT * pos_y + (TILE_HEIGHT - self.image.get_height()) // 2
@@ -35,18 +43,47 @@ class Pivot_point(pygame.sprite.Sprite):
 
 
 def main():
-    board = Field(30, 15, cell_size=CELL_SIZE, left=0, top=0)
+    global player, level_x, level_y, all_sprites, tiles_group, player_group, obstacles_group
+
+    all_sprites = pygame.sprite.Group()
+    tiles_group = pygame.sprite.Group()
+    player_group = pygame.sprite.Group()
+    obstacles_group = pygame.sprite.Group()
+    start_screen(screen)
+    # filename = input('Введите название уровня: ')
+    filename = 'map.txt'
+    player, level_x, level_y = generate_level(load_level(filename), globals())
     camera = Camera(WIDTH, HEIGHT)
+    camera.add(player)
+    camera.add_group(tiles_group)
+    is_moving = False
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                board.get_click(event)
-        screen.fill(BACKGROUND)
-        board.render(screen)
+            elif event.type == pygame.KEYDOWN:
+                is_moving = True
+            elif event.type == pygame.KEYUP:
+                is_moving = False
+        if is_moving:
+            old_player_rect = player.rect.copy()
+            key = pygame.key.get_pressed()
+            if key[pygame.K_LEFT]:
+                player.rect.x -= TILE_WIDTH
+            elif key[pygame.K_RIGHT]:
+                player.rect.x += TILE_WIDTH
+            elif key[pygame.K_UP]:
+                player.rect.y -= TILE_HEIGHT
+            elif key[pygame.K_DOWN]:
+                player.rect.y += TILE_HEIGHT
+            if pygame.sprite.spritecollideany(player, obstacles_group):
+                player.rect = old_player_rect
+        screen.fill(BACKGROUND_COLOR)
+        # изменяем ракурс камеры
         camera.update(player)
+        tiles_group.draw(screen)
+        player_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
     terminate()
