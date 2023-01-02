@@ -3,6 +3,13 @@ import sys
 import pygame
 
 
+GROUND = '0'
+ROCKS = '1'
+TOWN = '2'
+FOREST = '3'
+CAMERA_POINT = '@'
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', 'images', name)
     if not os.path.isfile(fullname):
@@ -42,11 +49,15 @@ def generate_level(level, vars):
     new_player, x, y = None, None, None
     for y in range(h):
         for x in range(w):
-            if level[y][x] == '.':
-                Tile('empty', x, y, vars)
-            elif level[y][x] == '#':
-                Tile('wall', x, y, vars)
-            elif level[y][x] == '@':
-                Tile('empty', x, y, vars)
+            if level[y][x] == GROUND:
+                Tile('ground', x, y, vars)
+            elif level[y][x] == ROCKS:
+                Tile('rocks', x, y, vars)
+            elif level[y][x] == TOWN:
+                Tile('town', x, y, vars)
+            elif level[y][x] == FOREST:
+                Tile('forest', x, y, vars)
+            elif level[y][x] == CAMERA_POINT:
+                Tile('ground', x, y, vars)
                 new_player = Player(x, y, vars)
     return new_player, w, h

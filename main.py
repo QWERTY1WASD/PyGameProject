@@ -5,7 +5,7 @@ from camera import Camera
 
 FPS = 50
 SIZE = WIDTH, HEIGHT = 1260, 720
-TILE_WIDTH = TILE_HEIGHT = 50
+TILE_WIDTH = TILE_HEIGHT = 50  # Todo: sprites size = 50 or 100
 BACKGROUND_COLOR = (0, 0, 0)
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -15,11 +15,14 @@ clock = pygame.time.Clock()
 
 
 tile_images = {
-    'wall': load_image('box.png'),
-    'empty': load_image('grass.png')
+    'ground': load_image('ground.png'),
+    # 'rocks': load_image('rocks.png'),
+    # 'town': load_image('town.png'),
+    'forest': load_image('forest.png')
 }
-obstacles = {'wall'}
-player_image = load_image('mario.png')
+# obstacles = {'rocks'}
+obstacles = {}
+player_image = load_image('point.png')
 
 
 class Tile(pygame.sprite.Sprite):
