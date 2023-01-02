@@ -3,6 +3,7 @@ import sys
 import pygame
 
 
+BARRIER = '#'
 GROUND = '0'
 ROCKS = '1'
 TOWN = '2'
@@ -51,6 +52,8 @@ def generate_level(level, vars):
         for x in range(w):
             if level[y][x] == GROUND:
                 Tile('ground', x, y, vars)
+            elif level[y][x] == BARRIER:
+                Tile('barrier', x, y, vars)
             elif level[y][x] == ROCKS:
                 Tile('rocks', x, y, vars)
             elif level[y][x] == TOWN:

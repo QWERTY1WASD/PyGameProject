@@ -18,10 +18,10 @@ tile_images = {
     'ground': load_image('ground.png'),
     # 'rocks': load_image('rocks.png'),
     # 'town': load_image('town.png'),
-    'forest': load_image('forest.png')
+    'forest': load_image('forest.png'),
+    'barrier': load_image('barrier.png')
 }
-# obstacles = {'rocks'}
-obstacles = {}
+obstacles = {'barrier'}
 player_image = load_image('point.png')
 
 
