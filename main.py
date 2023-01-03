@@ -2,6 +2,7 @@ import pygame
 from utils import load_image, terminate, generate_level, load_level
 from startscreen import start_screen
 from camera import Camera
+from units import BaseUnit
 
 FPS = 50
 SIZE = WIDTH, HEIGHT = 1260, 720
@@ -15,11 +16,10 @@ clock = pygame.time.Clock()
 
 
 tile_images = {
-    'ground': load_image('ground.png'),
-    # 'rocks': load_image('rocks.png'),
-    # 'town': load_image('town.png'),
-    'forest': load_image('forest.png'),
-    'barrier': load_image('barrier.png')
+    'ground': load_image('grass.png'),
+    'barrier': load_image('barrier.png'),
+    'infantry': load_image('infantry.png'),
+    'infantry_enemy': load_image('infantry_enemy.png')
 }
 obstacles = {'barrier'}
 player_image = load_image('point.png')
@@ -35,7 +35,15 @@ class Tile(pygame.sprite.Sprite):
             TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
 
 
-class Player(pygame.sprite.Sprite):
+class Infantry(BaseUnit, pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y, vars):
+        super().__init__(vars['tiles_group'], vars['all_sprites'])
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
+
+
+class PivotPoint(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, vars):
         super().__init__(vars['player_group'], vars['all_sprites'])
         self.image = player_image

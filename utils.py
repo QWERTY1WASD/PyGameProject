@@ -5,10 +5,11 @@ import pygame
 
 BARRIER = '#'
 GROUND = '0'
-ROCKS = '1'
-TOWN = '2'
-FOREST = '3'
 CAMERA_POINT = '@'
+INFANTRY = 'I'
+INFANTRY_ENEMY = 'K'
+TANK = 'T'
+TANK_ENEMY = 'G'
 
 
 def load_image(name, colorkey=None):
@@ -44,7 +45,7 @@ def load_level(filename):
 
 
 def generate_level(level, vars):
-    from main import Tile, Player
+    from main import Tile, PivotPoint, Infantry
     h = len(level)
     w = len(level[0])
     new_player, x, y = None, None, None
@@ -54,13 +55,16 @@ def generate_level(level, vars):
                 Tile('ground', x, y, vars)
             elif level[y][x] == BARRIER:
                 Tile('barrier', x, y, vars)
-            elif level[y][x] == ROCKS:
-                Tile('rocks', x, y, vars)
-            elif level[y][x] == TOWN:
-                Tile('town', x, y, vars)
-            elif level[y][x] == FOREST:
-                Tile('forest', x, y, vars)
             elif level[y][x] == CAMERA_POINT:
                 Tile('ground', x, y, vars)
-                new_player = Player(x, y, vars)
+                new_player = PivotPoint(x, y, vars)
+            elif level[y][x] == INFANTRY:
+                Tile('ground', x, y, vars)
+                Infantry('infantry', x, y, vars)
+            elif level[y][x] == INFANTRY_ENEMY:
+                Tile('ground', x, y, vars)
+                Infantry('infantry_enemy', x, y, vars)
+            # elif level[y][x] == TANK:
+            #    Tile('ground', x, y, vars)
+            #    new_player = PivotPoint(x, y, vars)
     return new_player, w, h
