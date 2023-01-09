@@ -74,7 +74,6 @@ def main():
     # camera = Camera(WIDTH, HEIGHT)
     # camera.add(player)
     # camera.add_group(tiles_group)
-    is_moving = False
 
     board = Board(HEX_COUNT_WIDTH, HEX_COUNT_HEIGHT, HEX_SIZE)
 
@@ -85,23 +84,15 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event)
-            elif event.type == pygame.KEYDOWN:
-                is_moving = True
-            elif event.type == pygame.KEYUP:
-                is_moving = False
-        # if is_moving:
-        #     old_player_rect = player.rect.copy()
-        #     key = pygame.key.get_pressed()
-        #     if key[pygame.K_LEFT]:
-        #         player.rect.x -= TILE_WIDTH
-        #     elif key[pygame.K_RIGHT]:
-        #         player.rect.x += TILE_WIDTH
-        #     elif key[pygame.K_UP]:
-        #         player.rect.y -= TILE_HEIGHT
-        #     elif key[pygame.K_DOWN]:
-        #         player.rect.y += TILE_HEIGHT
-        #     if pygame.sprite.spritecollideany(player, obstacles_group):
-        #         player.rect = old_player_rect
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            pass
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            pass
+        if keys[pygame.K_LEFT] or keys[pygame.K_d]:
+            pass
+        if keys[pygame.K_RIGHT] or keys[pygame.K_a]:
+            pass
         screen.fill(BACKGROUND_COLOR)
         # изменяем ракурс камеры
         # camera.update(player)
