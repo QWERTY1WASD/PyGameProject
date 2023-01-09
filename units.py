@@ -2,9 +2,9 @@ import pygame.sprite
 
 
 class BaseUnit:
-    # def __init__(self, opponent, x, y, image, health, attack_radius, attack_damage, moves):
+    # def __init__(self, opponent, _x, _y, image, health, attack_radius, attack_damage, moves):
     #    self.opponent = opponent
-    #    self.x, self.y = x, y
+    #    self._x, self._y = _x, _y
     #    self.image = image
     #    self.max_health = health
     #    self.health = health

@@ -18,12 +18,19 @@ class Hexagon:
         self.x, self.y = None, None
         self.is_active = False
         self.is_selected = False
+        self.image = None
 
     def set_active(self, value=None):
         if value is not None:
             self.is_active = value
         else:
             self.is_active = not self.is_active
+
+    def set_image(self, image):
+        import main
+
+        self.image = image
+        main.tiles_group.add(self.image)
 
     def get_center(self):
         return self.center_x, self.center_y
@@ -43,7 +50,7 @@ class Hexagon:
 
     def render(self, screen):
         color = self.COLOR
-        border = 5
+        border = 2
         if self.is_active:
             border = 0
         elif self.is_selected:
@@ -56,6 +63,11 @@ class Hexagon:
 
     def get_height(self):
         return self.height
+
+    def hex_to_pixel(self, offset):
+        x = self.size * 3 / 2 * self.x + offset
+        y = self.size * math.sqrt(3) * (self.y + self.x / 2) + offset
+        return x, y
 
 
 class Board:
@@ -143,9 +155,9 @@ class Board:
     def round_hex(self, x, y):
         rx = round(x)
         ry = round(y)
-        rz = round(-x - y)  # z = -x-y
-        x_diff = abs(x - rx)  # Ошибка округления x
-        y_diff = abs(y - ry)  # Ошибка округления y
+        rz = round(-x - y)  # z = -_x-_y
+        x_diff = abs(x - rx)  # Ошибка округления _x
+        y_diff = abs(y - ry)  # Ошибка округления _y
         z_diff = abs(-x - y - rz)  # Ошибка округления z
         if x_diff > y_diff and x_diff > z_diff:
             rx = -ry - rz  # Приведение под равенство
@@ -199,3 +211,15 @@ class Board:
             way.append(self.board[ry][rx])
         self.activate_hexes(way, value=True)
         return way
+
+    def set_map(self, map):
+        import main
+
+        for y in range(min(len(map), self.height)):
+            for x in range(min(len(map[y]), self.width)):
+                self.board[y][x].set_image(main.tile_images['ground'])
+
+    def get_hex_true_coords(self, x, y):
+        return self.board[y][x].hex_to_pixel(self.offset)
+        # return [[x.hex_to_pixel(self.offset) for x in y] for y in self.board]
+        # return [y.hex_to_pixel(self.offset) for x in self.board for y in x]
