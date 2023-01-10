@@ -8,7 +8,7 @@ from board import Board
 FPS = 60
 SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 32
-OFFSET_BOARD = 100
+OFFSET_BOARD = 50
 BACKGROUND_COLOR = (0, 0, 0)
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -22,28 +22,30 @@ tile_images = {
         # 'empty': load_image('grass.png')
 }
 
-HEX_COUNT_WIDTH = 10
-HEX_COUNT_HEIGHT = 5
-HEX_SIZE = 18.5
+# HEX_COUNT_WIDTH = 10
+# HEX_COUNT_HEIGHT = 5
+HEX_SIZE = 17
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__()
-        # if tile_type in obstacles:
-        #     vars['obstacles_group'].add(self)
-        self.image = tile_images[tile_type]
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
+    GROUND = load_image("tile003.png")
 
-
-tiles_group = pygame.sprite.Group()
+    def __init__(self, image, *group):
+        super().__init__(*group)
+        if image == GROUND:
+            self.image = Tile.GROUND
+        self.rect = self.image.get_rect()
 
 
 def main():
+    # img = load_image('tile003.png')
     filename = "level_01.txt"
     map = load_level(filename)
-    board = Board(HEX_COUNT_WIDTH, HEX_COUNT_HEIGHT, HEX_SIZE, offset=OFFSET_BOARD)
+    board = Board(len(map[0]), len(map), HEX_SIZE, offset=OFFSET_BOARD)
+    for y in range(board.height):
+        for x in range(board.width):
+            board.set_image(x, y, Tile(map[y][x], board.tiles_group))
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -51,20 +53,8 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event)
-        # keys = pygame.key.get_pressed()
-        # old_player_rect = player.rect.copy()
-        # if keys[pygame.K_UP] or keys[pygame.K_w]:
-        #     player.rect.y -= TILE_WIDTH
-        # if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-        #     player.rect.y += TILE_WIDTH
-        # if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-        #     player.rect.x -= TILE_WIDTH
-        # if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-        #     player.rect.x += TILE_WIDTH
-        # if pygame.sprite.spritecollideany(player, obstacles_group):
-        #     player.rect = old_player_rect
         screen.fill(BACKGROUND_COLOR)
-        tiles_group.draw(screen)
+        board.draw_sprites(screen)
         board.render(screen)
         pygame.display.flip()
         clock.tick(FPS)

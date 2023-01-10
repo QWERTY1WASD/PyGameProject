@@ -18,19 +18,13 @@ class Hexagon:
         self.x, self.y = None, None
         self.is_active = False
         self.is_selected = False
-        self.image = None
+        self.sprite = pygame.sprite.Sprite()
 
     def set_active(self, value=None):
         if value is not None:
             self.is_active = value
         else:
             self.is_active = not self.is_active
-
-    def set_image(self, image):
-        import main
-
-        self.image = image
-        main.tiles_group.add(self.image)
 
     def get_center(self):
         return self.center_x, self.center_y
@@ -45,16 +39,17 @@ class Hexagon:
         increase = 0 if self.HORIZONTAL_HEXAGON else 30
         angle_deg = 60 * i + increase
         angle_rad = math.pi / 180 * angle_deg
-        return self.center_x + self.size * math.cos(angle_rad),\
-            self.center_y + self.size * math.sin(angle_rad)
+        return round(self.center_x + self.size * math.cos(angle_rad)), \
+            round(self.center_y + self.size * math.sin(angle_rad))
 
     def render(self, screen):
         color = self.COLOR
         border = 2
         if self.is_active:
             border = 0
+            color = self.SELECTED_COLOR
         elif self.is_selected:
-            border = 5
+            border = 1
             color = self.SELECTED_COLOR
         pygame.draw.polygon(screen, color, self.points, border)
 
@@ -64,9 +59,9 @@ class Hexagon:
     def get_height(self):
         return self.height
 
-    def hex_to_pixel(self, offset):
-        x = self.size * 3 / 2 * self.x + offset
-        y = self.size * math.sqrt(3) * (self.y + self.x / 2) + offset
+    def get_top_left_coord(self):
+        x = self.points[3][0] + 2
+        y = self.points[4][1]
         return x, y
 
 
@@ -77,6 +72,7 @@ class Board:
         self.cell_size = cell_size
         self.offset = offset
         self.a, self.b = None, None
+        self.tiles_group = pygame.sprite.Group()
 
         self.board = []
         for y in range(self.height):
@@ -91,6 +87,9 @@ class Board:
                 hexagon.set_coords(x, y)
                 temp.append(hexagon)
             self.board.append(temp)
+
+    def draw_sprites(self, screen):
+        self.tiles_group.draw(screen)
 
     def render(self, screen: pygame.Surface):
         for y in range(self.height):
@@ -212,12 +211,12 @@ class Board:
         self.activate_hexes(way, value=True)
         return way
 
-    def set_map(self, map):
-        import main
-
-        for y in range(min(len(map), self.height)):
-            for x in range(min(len(map[y]), self.width)):
-                self.board[y][x].set_image(main.tile_images['ground'])
+    def set_image(self, x, y, image):
+        h = self.board[y][x]
+        h.sprite = image
+        h.sprite.rect = h.sprite.image.get_rect()
+        h.sprite.rect.move_ip(h.get_top_left_coord())
+        self.tiles_group.add(h.sprite)
 
     def get_hex_true_coords(self, x, y):
         return self.board[y][x].hex_to_pixel(self.offset)
