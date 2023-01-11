@@ -3,17 +3,14 @@ import sys
 import pygame
 
 
-BARRIER = '#'
-GROUND = '0'
-CAMERA_POINT = '@'
-INFANTRY_1 = 'I'
-INFANTRY_2 = 'K'
-TANK_1 = 'T'
-TANK_ENEMY_2 = 'G'
-
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', 'images', name)
+def load_image(name, colorkey=None, is_winter=None):
+    if is_winter:
+        _dir = 'winter'
+    elif is_winter is None:
+        _dir = 'units'
+    else:
+        _dir = 'summer'
+    fullname = os.path.join('data', 'images', _dir, name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         terminate()
@@ -41,4 +38,4 @@ def load_level(filename):
     with open(filename, 'r') as mapFile:
         level_map = [line.rstrip() for line in mapFile]
     max_width = max(map(len, level_map))
-    return list(map(lambda x: x.ljust(max_width, GROUND), level_map))
+    return list(map(lambda x: x.ljust(max_width, '0'), level_map))

@@ -6,7 +6,7 @@ import math
 class Hexagon:
     HORIZONTAL_HEXAGON = True
     COLOR = pygame.Color("white")
-    SELECTED_COLOR = pygame.Color("red")
+    SELECTED_COLOR = (25, 0, 175)
 
     def __init__(self, center, size):
         self.center_x = center[0]
@@ -42,7 +42,12 @@ class Hexagon:
         return round(self.center_x + self.size * math.cos(angle_rad)), \
             round(self.center_y + self.size * math.sin(angle_rad))
 
-    def render(self, screen):
+    def render(self, screen, offset_x, offset_y):
+        self.center_x += offset_x - 50
+        self.center_y += offset_y - 50
+        self.points = [self.hex_corner(i) for i in range(6)]
+        self.sprite.rect = self.get_top_left_coord()
+
         color = self.COLOR
         border = 2
         if self.is_active:
@@ -66,11 +71,12 @@ class Hexagon:
 
 
 class Board:
-    def __init__(self, width, height, cell_size, offset=100):
+    def __init__(self, width, height, cell_size, offset_x=50, offset_y=50):
         self.width = width
         self.height = height
         self.cell_size = cell_size
-        self.offset = offset
+        self.offset_x = offset_x
+        self.offset_y = offset_y
         self.a, self.b = None, None
         self.tiles_group = pygame.sprite.Group()
 
@@ -81,8 +87,8 @@ class Board:
                 increase = 0
                 if x % 2 == 1:
                     increase = self.cell_size * math.sqrt(3) / 2
-                hexagon = Hexagon((int(x * self.cell_size * 3 / 2 + self.offset),
-                                   int(y * self.cell_size * math.sqrt(3) + increase + self.offset)),
+                hexagon = Hexagon((int(x * self.cell_size * 3 / 2 + self.offset_x),
+                                   int(y * self.cell_size * math.sqrt(3) + increase + self.offset_y)),
                                   self.cell_size)
                 hexagon.set_coords(x, y)
                 temp.append(hexagon)
@@ -94,7 +100,7 @@ class Board:
     def render(self, screen: pygame.Surface):
         for y in range(self.height):
             for x in range(self.width):
-                self.board[y][x].render(screen)
+                self.board[y][x].render(screen, self.offset_x, self.offset_y)
 
     # def on_hover(self, mouse_pos):
     #     hex = self.get_hex(mouse_pos)
@@ -218,7 +224,6 @@ class Board:
         h.sprite.rect.move_ip(h.get_top_left_coord())
         self.tiles_group.add(h.sprite)
 
-    def get_hex_true_coords(self, x, y):
-        return self.board[y][x].hex_to_pixel(self.offset)
-        # return [[x.hex_to_pixel(self.offset) for x in y] for y in self.board]
-        # return [y.hex_to_pixel(self.offset) for x in self.board for y in x]
+    def move_board(self, x, y):
+        self.offset_x += x
+        self.offset_y += y
