@@ -18,6 +18,7 @@ class Hexagon:
         self.x, self.y = None, None
         self.is_active = False
         self.is_selected = False
+        self.container = None  # Содержание клетки: [None, "UNIT", ...] для удобства определения
         self.sprite = pygame.sprite.Sprite()
 
     def set_active(self, value=None):
