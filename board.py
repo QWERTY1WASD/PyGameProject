@@ -70,7 +70,7 @@ class Hexagon:
 
 
 class Board:
-    def __init__(self, width, height, cell_size, offset_x=0, offset_y=0):
+    def __init__(self, width, height, cell_size, offset_x=50, offset_y=50):
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -131,6 +131,7 @@ class Board:
         return is_inside_1 or is_inside_2
 
     def get_cell(self, mouse_pos):
+        mouse_pos = (mouse_pos[0] - self.offset_x, mouse_pos[1] - self.offset_y)
         for y in range(self.height):
             for x in range(self.width):
                 if self.isPointInHex(mouse_pos, self.board[y][x]):

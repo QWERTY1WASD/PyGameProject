@@ -7,8 +7,10 @@ import constants
 FPS = 60
 SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
+OFFSET = 50
 BACKGROUND_COLOR = (0, 0, 0)
-SPEED = 10
+SPEED = 26
+HEX_SIZE = 26
 is_winter = True
 
 pygame.init()
@@ -36,28 +38,6 @@ images = {constants.GROUND[0]: load_image(constants.GROUND[1], is_winter=is_wint
           constants.CAMERA_POINT[0]: load_image(constants.CAMERA_POINT[1]),
           }
 
-HEX_SIZE = 26
-
-
-class Camera:
-    def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, WIDTH, HEIGHT)
-        self.observers = []
-
-    def add_observers(self, ob):
-        self.observers.extend(ob)
-
-    def move(self, vector):
-        self.rect.move_ip(vector)
-
-    @property
-    def x(self):
-        return self.rect.x
-
-    @property
-    def y(self):
-        return self.rect.y
-
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, image, *group):
@@ -75,9 +55,9 @@ def main():
     min_camera_pos = [-TILE_WIDTH, -TILE_HEIGHT]
     max_camera_pos = [TILE_WIDTH * WIDTH, TILE_HEIGHT * HEIGHT]
 
+    current_pos = [0, 0]
     filename = "level_01.txt"
     map = load_level(filename)
-    camera = Camera(-100, -100)
     board = Board(len(map[0]), len(map), HEX_SIZE)
 
     for y in range(board.height):
@@ -93,17 +73,17 @@ def main():
                 board.get_click(event)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            camera.move([0, SPEED])
-            board.set_y_offset(camera.y)
+            current_pos[1] += 1 if current_pos[1] != 0 else 0
+            board.set_y_offset(current_pos[1] * TILE_HEIGHT)
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            camera.move([0, -SPEED])
-            board.set_y_offset(camera.y)
+            current_pos[1] -= 1 if abs(current_pos[1]) != len(map) - 10 else 0
+            board.set_y_offset(current_pos[1] * TILE_HEIGHT)
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            camera.move([SPEED, 0])
-            board.set_x_offset(camera.x)
+            current_pos[0] += 1 if current_pos[0] != 0 else 0
+            board.set_x_offset(current_pos[0] * TILE_HEIGHT)
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            camera.move([-SPEED, 0])
-            board.set_x_offset(camera.x)
+            current_pos[0] -= 1 if abs(current_pos[0]) != len(map[0]) - 10 else 0
+            board.set_x_offset(current_pos[0] * TILE_HEIGHT)
         screen.fill(BACKGROUND_COLOR)
 
         board.draw_sprites(screen)
