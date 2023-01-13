@@ -30,23 +30,21 @@ class Hexagon:
     def get_center(self):
         return self.center_x, self.center_y
 
-    def set_coords(self, x, y):
+    def set_table_coords(self, x, y):
         self.x, self.y = x, y
 
-    def get_coords(self):
+    def get_table_coords(self):
         return self.x, self.y
 
-    def hex_corner(self, i):
+    def hex_corner(self, i, offset_x=0, offset_y=0):
         increase = 0 if self.HORIZONTAL_HEXAGON else 30
         angle_deg = 60 * i + increase
         angle_rad = math.pi / 180 * angle_deg
-        return round(self.center_x + self.size * math.cos(angle_rad)), \
-            round(self.center_y + self.size * math.sin(angle_rad))
+        return round(self.center_x + self.size * math.cos(angle_rad)) + offset_x, \
+            round(self.center_y + self.size * math.sin(angle_rad)) + offset_y
 
     def render(self, screen, offset_x, offset_y):
-        self.center_x += offset_x - 50
-        self.center_y += offset_y - 50
-        self.points = [self.hex_corner(i) for i in range(6)]
+        self.points = [self.hex_corner(i, offset_x=offset_x, offset_y=offset_y) for i in range(6)]
         self.sprite.rect = self.get_top_left_coord()
 
         color = self.COLOR
@@ -72,7 +70,7 @@ class Hexagon:
 
 
 class Board:
-    def __init__(self, width, height, cell_size, offset_x=50, offset_y=50):
+    def __init__(self, width, height, cell_size, offset_x=0, offset_y=0):
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -91,9 +89,15 @@ class Board:
                 hexagon = Hexagon((int(x * self.cell_size * 3 / 2 + self.offset_x),
                                    int(y * self.cell_size * math.sqrt(3) + increase + self.offset_y)),
                                   self.cell_size)
-                hexagon.set_coords(x, y)
+                hexagon.set_table_coords(x, y)
                 temp.append(hexagon)
             self.board.append(temp)
+
+    def set_x_offset(self, x):
+        self.offset_x = x
+
+    def set_y_offset(self, y):
+        self.offset_y = y
 
     def draw_sprites(self, screen):
         self.tiles_group.draw(screen)
@@ -130,7 +134,7 @@ class Board:
         for y in range(self.height):
             for x in range(self.width):
                 if self.isPointInHex(mouse_pos, self.board[y][x]):
-                    return self.board[y][x].get_coords()
+                    return self.board[y][x].get_table_coords()
 
     def on_click(self, cell_coords, event):
         if cell_coords is None:
@@ -172,8 +176,8 @@ class Board:
         return rx, ry
 
     def hex_distance(self, a, b):
-        x_a, y_a = a.get_coords()
-        x_b, y_b = b.get_coords()
+        x_a, y_a = a.get_table_coords()
+        x_b, y_b = b.get_table_coords()
         xd = abs(x_a - x_b)
         yd = abs((y_a + (x_a % 2) / 2) - (y_b + (x_b % 2) / 2))
         if xd >= yd * 2:
@@ -199,8 +203,8 @@ class Board:
         return result
 
     def find_way(self, a, b):
-        x_a, y_a = a.get_coords()
-        x_b, y_b = b.get_coords()
+        x_a, y_a = a.get_table_coords()
+        x_b, y_b = b.get_table_coords()
         way = []
         distance = self.hex_distance(a, b)
         if distance == 0:
@@ -208,10 +212,10 @@ class Board:
             return way
         for i in range(distance + 1):
             x, y = Vector2.lerp(Vector2(x_a, y_a), Vector2(x_b, y_b), i / distance)
-            rx, ry = self.round_hex(x, y + 0.01)
+            rx, ry = self.round_hex(x + 0.01, y + 0.01)
             if i != 0:
                 if self.hex_distance(way[-1], self.board[ry][rx]) > 1:
-                    ry += way[-1].get_coords()[1] - ry
+                    ry += way[-1].get_table_coords()[1] - ry
             if self.board[ry][rx] in way:
                 ry += (y_b - y_a) // abs(y_b - y_a)
             way.append(self.board[ry][rx])
