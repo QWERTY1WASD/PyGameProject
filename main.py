@@ -1,6 +1,6 @@
 import pygame
 from utils import terminate, load_level, generate_level, load_images
-from startscreen import start_screen
+from screens import start_screen, end_screen
 from board import Board
 
 FPS = 60
@@ -8,6 +8,7 @@ SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
+SCORE = 0 # SCORING SYSTEM
 PLAYERS = [1, 2]
 
 turn = 1  # Количество ходов
@@ -39,7 +40,7 @@ def main():
     board.set_y_offset(0)
 
     current_player = 1
-
+    start_screen(screen)  # Вызов стартового окна
     units_1, units_2 = generate_level(board, map, images)
     for u in units_1:
         first_player_group.add(u)
