@@ -8,9 +8,6 @@ SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
-PLAYERS = [1, 2]
-
-turn = 1  # Количество ходов
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -24,8 +21,13 @@ class Tile(pygame.sprite.Sprite):
         self.image = images.get(image)
         self.rect = self.image.get_rect()
 
+    def draw(self):
+        self.rect.move_ip(self.rect[0] - camera.rect[0], self.rect[1] - camera.rect[1])
+
 
 def main():
+    global camera
+
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
 
@@ -37,8 +39,6 @@ def main():
     board = Board(len(map[0]), len(map), HEX_SIZE)
     board.set_x_offset(0)
     board.set_y_offset(0)
-
-    current_player = 1
 
     units_1, units_2 = generate_level(board, map, images)
     for u in units_1:
@@ -52,7 +52,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                board.get_click(event, current_player)
+                board.get_click(event)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             current_pos[1] -= 1 if current_pos[1] != 0 else 0

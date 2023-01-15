@@ -10,7 +10,10 @@ FLAG = ('A', 'flag.png')
 BUILDING_01 = ('B', 'building_01.png')
 BUILDING_02 = ('V', 'building_02.png')
 
-# ***
+# ***  START, END SCREENS ***
+
+STARTMENU = "fon.jpg"
+ENDMENU = "fon.jpg"
 
 # *** UNITS **
 
