@@ -31,17 +31,23 @@ class BaseUnit(pygame.sprite.Sprite):
         self.health = health
         self.attack_radius = attack_radius
         self.attack_damage = attack_damage
+
+        self.max_moves = moves
         self.moves = moves
         self.board = board
         self.dead = False  # Жива ли пешка
 
-    def move_diap(self):
-        diap = self.board.diap(self.hex, self.moves)
-        self.board.activate_hexes_moves(diap, True)
-
-    def attack_diap(self):
-        diap = self.board.diap(self.hex, self.moves)
-        self.board.activate_hexes_attack(diap, True)
+    def display_move_and_attack(self):
+        diap_move = self.board.diap(self.hex, self.moves)
+        diap_attack = self.board.diap(self.hex, self.attack_radius)
+        if self.moves > self.attack_radius:
+            self.board.activate_hexes_moves(diap_move, True)
+            # self.board.activate_hexes_moves(diap_attack, False)  # Не обязательно
+            self.board.activate_hexes_attack(diap_attack, True)
+        else:
+            self.board.activate_hexes_attack(diap_attack, True)
+            self.board.activate_hexes_attack(diap_move, False)
+            self.board.activate_hexes_moves(diap_move, True)
 
     def move(self, b):
         if self.moves <= 0 or self.dead:
@@ -51,10 +57,14 @@ class BaseUnit(pygame.sprite.Sprite):
             return
         way = self.board.find_way(self.hex, b)
         unit = self.hex.container
+        self.moves -= distance
         self.hex.container = None
         self.hex = b
         self.hex.container = unit
         return way
+
+    def new_turn(self):
+        self.moves = self.max_moves
 
     def check_attack(self):  # Возвращает список клеток, которые можно атаковать
         out = []
@@ -82,8 +92,8 @@ class BaseUnit(pygame.sprite.Sprite):
 
 
 class Infantry(BaseUnit):
-    def __init__(self, team, hex, board, image, health=100, attack_radius=5,
-                 attack_damage=25, moves=8):
+    def __init__(self, team, hex, board, image, health=100, attack_radius=3,
+                 attack_damage=25, moves=7):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "INFANTRY"
 
@@ -98,7 +108,7 @@ class Infantry(BaseUnit):
 
 class AntiTanksInfantry(BaseUnit):
     def __init__(self, team, hex, board, image, health=50, attack_radius=7,
-                 attack_damage=15, moves=6):
+                 attack_damage=15, moves=8):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "ANTI TANKS INFANTRY"
 
@@ -113,7 +123,7 @@ class AntiTanksInfantry(BaseUnit):
 
 class Tank(BaseUnit):
     def __init__(self, team, hex, board, image, health=250, attack_radius=6,
-                 attack_damage=50, moves=12):
+                 attack_damage=50, moves=10):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "TANK"
 
@@ -128,7 +138,7 @@ class Tank(BaseUnit):
 
 class SupportTruck(BaseUnit):
     def __init__(self, team, hex, board, image, health=100, attack_radius=0,
-                 attack_damage=0, moves=15):
+                 attack_damage=0, moves=12):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "TANK"
 

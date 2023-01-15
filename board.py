@@ -97,6 +97,7 @@ class Board:
         self.offset_y = offset_y
         self.a, self.b = None, None
         self.tiles_group = pygame.sprite.Group()
+        self.current_unit = None
 
         self.board = []
         for y in range(self.height):
@@ -168,10 +169,11 @@ class Board:
                 unit = self.board[y][x].container
                 if unit.team != current_player:
                     return
-                unit.move_diap()
-                unit.attack_diap()
+                unit.display_move_and_attack()
+                self.current_unit = unit
         elif event.button == pygame.BUTTON_RIGHT:
-            pass
+            if self.current_unit is not None:
+                self.current_unit.move(self.board[y][x])
 
     def get_click(self, mouse_event, current_player):
         mouse_pos = (mouse_event.pos[0] - self.offset_x, mouse_event.pos[1] - self.offset_y)
@@ -219,6 +221,7 @@ class Board:
         for y in range(self.height):
             for x in range(self.width):
                 self.board[y][x].set_is_move(False)
+                self.board[y][x].set_is_path(False)
                 self.board[y][x].set_is_attack(False)
 
     def diap(self, a, n):

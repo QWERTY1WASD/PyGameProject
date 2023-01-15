@@ -81,11 +81,11 @@ def generate_level(board, level, images):
     for y in range(board.height):
         for x in range(board.width):
             if level[y][x] in FIRST_PLAYER_SIGNS:
-                if level[y][x] == constants.INFANTRY_1:
+                if level[y][x] == constants.INFANTRY_1[0]:
                     un = Infantry(1, board.board[y][x], board, level[y][x])
-                elif level[y][x] == constants.ANTI_TANKS_INFANTRY_1:
+                elif level[y][x] == constants.ANTI_TANKS_INFANTRY_1[0]:
                     un = AntiTanksInfantry(1, board.board[y][x], board, level[y][x])
-                elif level[y][x] == constants.TANK_1:
+                elif level[y][x] == constants.TANK_1[0]:
                     un = Tank(1, board.board[y][x], board, level[y][x])
                 else:
                     un = SupportTruck(1, board.board[y][x], board, level[y][x])
@@ -95,11 +95,11 @@ def generate_level(board, level, images):
                 board.set_image(x, y, Tile(constants.GROUND[0], images,
                                            board.tiles_group))
             elif level[y][x] in SECOND_PLAYER_SIGNS:
-                if level[y][x] == constants.INFANTRY_2:
+                if level[y][x] == constants.INFANTRY_2[0]:
                     un = Infantry(2, board.board[y][x], board, level[y][x])
-                elif level[y][x] == constants.ANTI_TANKS_INFANTRY_2:
+                elif level[y][x] == constants.ANTI_TANKS_INFANTRY_2[0]:
                     un = AntiTanksInfantry(2, board.board[y][x], board, level[y][x])
-                elif level[y][x] == constants.TANK_2:
+                elif level[y][x] == constants.TANK_2[0]:
                     un = Tank(2, board.board[y][x], board, level[y][x])
                 else:
                     un = SupportTruck(2, board.board[y][x], board, level[y][x])
