@@ -1,6 +1,11 @@
 import os
 import sys
 import pygame
+import constants
+
+
+FIRST_PLAYER_SIGNS = 'ISNT'
+SECOND_PLAYER_SIGNS = 'KPMG'
 
 
 def load_image(name, colorkey=None, is_winter=None):
@@ -25,6 +30,20 @@ def load_image(name, colorkey=None, is_winter=None):
     return image
 
 
+def load_images(is_winter):
+    images = {
+        constants.GROUND[0]: load_image(constants.GROUND[1], is_winter=is_winter),
+        constants.FOREST[0]: load_image(constants.FOREST[1], is_winter=is_winter),
+        constants.SMALL_STONE[0]: load_image(constants.SMALL_STONE[1], is_winter=is_winter),
+        constants.STONE[0]: load_image(constants.STONE[1], is_winter=is_winter),
+        constants.BUILDING_01[0]: load_image(constants.BUILDING_01[1], is_winter=is_winter),
+        constants.BUILDING_02[0]: load_image(constants.BUILDING_02[1], is_winter=is_winter),
+        constants.FALLEN_TREE[0]: load_image(constants.FALLEN_TREE[1], is_winter=is_winter),
+        constants.FLAG[0]: load_image(constants.FLAG[1], is_winter=is_winter)
+    }
+    return images
+
+
 def terminate():
     pygame.quit()
     sys.exit()
@@ -35,7 +54,45 @@ def load_level(filename):
     if not os.path.isfile(filename):
         print(f"Файл с картой уровня '{filename}' не найден")
         terminate()
+    commands = []
+    level_map = []
     with open(filename, 'r') as mapFile:
-        level_map = [line.rstrip() for line in mapFile]
+        is_commands = False
+        for line in mapFile:
+            line = line.rstrip()
+            if line == '***':  # Означает завершение карты. На следующей строке пишутся команды
+                is_commands = True
+            elif is_commands:
+                commands.append(line)
+            else:
+                level_map.append(line)
     max_width = max(map(len, level_map))
-    return list(map(lambda x: x.ljust(max_width, '0'), level_map))
+    return list(map(lambda x: x.ljust(max_width, '0'), level_map)), commands
+
+
+def generate_level(board, level, images):
+    from main import Tile
+    from units import BaseUnit
+    units_1 = []
+    units_2 = []
+    for y in range(board.height):
+        for x in range(board.width):
+            if level[y][x] in FIRST_PLAYER_SIGNS:
+                un = BaseUnit(1, board.board[y][x], level[y][x],
+                                        10, 3, 5, 5, board)
+                board.set_unit(x, y, un)
+                units_1.append(un)
+
+                board.set_image(x, y, Tile(constants.GROUND[0], images,
+                                           board.tiles_group))
+            elif level[y][x] in SECOND_PLAYER_SIGNS:
+                un = BaseUnit(2, board.board[y][x], level[y][x],
+                                        10, 3, 5, 5, board)
+                board.set_unit(x, y, un)
+                units_2.append(un)
+
+                board.set_image(x, y, Tile(constants.GROUND[0], images,
+                                           board.tiles_group))
+            else:
+                board.set_image(x, y, Tile(level[y][x], images, board.tiles_group))
+    return units_1, units_2

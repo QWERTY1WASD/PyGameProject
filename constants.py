@@ -1,3 +1,5 @@
+# *** MAP TILES ***
+
 BARRIER = ('#', 'barrier.png')
 GROUND = ('0', 'ground.png')
 FOREST = ('F', 'forest.png')
@@ -8,7 +10,9 @@ FLAG = ('A', 'flag.png')
 BUILDING_01 = ('B', 'building_01.png')
 BUILDING_02 = ('V', 'building_02.png')
 
-CAMERA_POINT = ('@', 'point.png')
+# ***
+
+# *** UNITS **
 
 INFANTRY_1 = ('I', 'infantry_1.png')
 INFANTRY_2 = ('K', 'infantry_2.png')
@@ -21,3 +25,5 @@ SUPPORT_TRUCK_2 = ('M', 'support_truck_2.png')
 
 TANK_1 = ('T', 'tank_1.png')
 TANK_2 = ('G', 'tank_2.png')
+
+# ***

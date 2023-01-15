@@ -46,6 +46,8 @@ class Hexagon:
     def render(self, screen, offset_x, offset_y):
         self.points = [self.hex_corner(i, offset_x=offset_x, offset_y=offset_y) for i in range(6)]
         self.sprite.rect = self.get_top_left_coord()
+        if self.container is not None:
+            self.container.rect = self.get_top_left_coord()
 
         color = self.COLOR
         border = 2
@@ -229,6 +231,10 @@ class Board:
         h.sprite.rect = h.sprite.image.get_rect()
         h.sprite.rect.move_ip(h.get_top_left_coord())
         self.tiles_group.add(h.sprite)
+
+    def set_unit(self, x, y, unit):
+        h = self.board[y][x]
+        h.container = unit
 
     def move_board(self, x, y):
         self.offset_x += x
