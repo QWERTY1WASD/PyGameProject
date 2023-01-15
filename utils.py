@@ -15,7 +15,10 @@ def load_image(name, colorkey=None, is_winter=None):
         _dir = 'units'
     else:
         _dir = 'summer'
-    fullname = os.path.join('data', 'images', _dir, name)
+    if name == "fon.jpg": # Исключение для фонов
+        fullname = os.path.join('data', 'images', name)
+    else:
+        fullname = os.path.join('data', 'images', _dir, name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         terminate()
