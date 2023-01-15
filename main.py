@@ -1,5 +1,5 @@
 import pygame
-from utils import terminate, load_level, generate_level, load_images
+from utils import terminate, load_level, generate_level, load_tiles
 from screens import start_screen, end_screen
 from board import Board
 
@@ -8,7 +8,6 @@ SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
-SCORE = 0  # SCORING SYSTEM
 PLAYERS = [1, 2]
 
 turn = 1  # Количество ходов
@@ -17,6 +16,7 @@ pygame.init()
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
+score = [0, 0]  # Score system for 1 and 2 players
 
 
 class Tile(pygame.sprite.Sprite):
@@ -33,7 +33,7 @@ def main():
     filename = "level_01.txt"
     map, commands = load_level(filename)
     is_winter = True if 'is_winter' in commands else False
-    images = load_images(is_winter)
+    images = load_tiles(is_winter)
     current_pos = [0, 0]
     board = Board(len(map[0]), len(map), HEX_SIZE)
     board.set_x_offset(0)

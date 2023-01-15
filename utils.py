@@ -33,7 +33,7 @@ def load_image(name, colorkey=None, is_winter=None):
     return image
 
 
-def load_images(is_winter):
+def load_tiles(is_winter):
     images = {
         constants.GROUND[0]: load_image(constants.GROUND[1], is_winter=is_winter),
         constants.FOREST[0]: load_image(constants.FOREST[1], is_winter=is_winter),
@@ -75,7 +75,7 @@ def load_level(filename):
 
 def generate_level(board, level, images):
     from main import Tile
-    from units import BaseUnit, Infantry, AntiTanksInfantry, Tank, SupportTruck
+    from units import Infantry, AntiTanksInfantry, Tank, SupportTruck
     units_1 = []
     units_2 = []
     for y in range(board.height):
