@@ -6,7 +6,9 @@ import math
 class Hexagon:
     HORIZONTAL_HEXAGON = True
     COLOR = pygame.Color("white")
-    SELECTED_COLOR = (25, 0, 175)
+    MOVES_COLOR = (0, 204, 204)
+    PATH_COLOR = (153, 0, 153)
+    ATTACK_COLOR = (204, 0, 0)
 
     def __init__(self, center, size):
         self.center_x = center[0]
@@ -16,16 +18,29 @@ class Hexagon:
         self.height = size * 2
         self.width = math.sqrt(3)/2 * self.height
         self.x, self.y = None, None
-        self.is_active = False
-        self.is_selected = False
+        self.is_move = False
+        self.is_path = False
+        self.is_attack = False
         self.container = None  # Содержание клетки: [None, "UNIT", ...] для удобства определения
         self.sprite = pygame.sprite.Sprite()
 
-    def set_active(self, value=None):
+    def set_is_move(self, value=None):
         if value is not None:
-            self.is_active = value
+            self.is_move = value
         else:
-            self.is_active = not self.is_active
+            self.is_move = not self.is_move
+
+    def set_is_path(self, value=None):
+        if value is not None:
+            self.is_path = value
+        else:
+            self.is_path = not self.is_path
+
+    def set_is_attack(self, value=None):
+        if value is not None:
+            self.is_attack = value
+        else:
+            self.is_attack = not self.is_attack
 
     def get_center(self):
         return self.center_x, self.center_y
@@ -48,15 +63,17 @@ class Hexagon:
         self.sprite.rect = self.get_top_left_coord()
         if self.container is not None:
             self.container.rect = self.get_top_left_coord()
-
         color = self.COLOR
         border = 2
-        if self.is_active:
+        if self.is_move:
             border = 0
-            color = self.SELECTED_COLOR
-        elif self.is_selected:
-            border = 1
-            color = self.SELECTED_COLOR
+            color = self.MOVES_COLOR
+        if self.is_path:
+            border = 0
+            color = self.PATH_COLOR
+        if self.is_attack:
+            border = 0
+            color = self.ATTACK_COLOR
         pygame.draw.polygon(screen, color, self.points, border)
 
     def get_width(self):
@@ -133,33 +150,33 @@ class Board:
         return is_inside_1 or is_inside_2
 
     def get_cell(self, mouse_pos):
-        mouse_pos = (mouse_pos[0] - self.offset_x, mouse_pos[1] - self.offset_y)
         for y in range(self.height):
             for x in range(self.width):
+                # print(self.board[y][x].sprite.rect)
+                # if self.board[y][x].sprite.rect.collidepoint(mouse_pos):
+                #     print('s')
                 if self.isPointInHex(mouse_pos, self.board[y][x]):
                     return self.board[y][x].get_table_coords()
 
-    def on_click(self, cell_coords, event):
+    def on_click(self, cell_coords, event, current_player):
+        self.clear_activate_hexes()
         if cell_coords is None:
             return
         x, y = cell_coords
         if event.button == pygame.BUTTON_LEFT:
-            self.a = self.board[y][x]
-            self.a.set_active()
+            if self.board[y][x].container is not None:
+                unit = self.board[y][x].container
+                if unit.team != current_player:
+                    return
+                unit.move_diap()
+                unit.attack_diap()
         elif event.button == pygame.BUTTON_RIGHT:
-            self.b = self.board[y][x]
-            self.b.set_active()
-            self.b.set_active()
-        if self.a is not None and self.b is not None:
-            for h in self.board:
-                self.activate_hexes(h, False)
-            self.a.set_active()
-            self.b.set_active()
-            self.find_way(self.a, self.b)
+            pass
 
-    def get_click(self, mouse_event):
-        cell = self.get_cell(mouse_event.pos)
-        self.on_click(cell, mouse_event)
+    def get_click(self, mouse_event, current_player):
+        mouse_pos = (mouse_event.pos[0] - self.offset_x, mouse_event.pos[1] - self.offset_y)
+        cell = self.get_cell(mouse_pos)
+        self.on_click(cell, mouse_event, current_player)
 
     def draw_line(self, screen, a, b):
         pygame.draw.line(screen, "white", (a.center_x, a.center_y),
@@ -189,8 +206,20 @@ class Board:
             result = xd + (yd - xd / 2)
         return int(result)
 
-    def activate_hexes(self, hexes, value):
-        [_hex.set_active(value=value) for _hex in hexes]
+    def activate_hexes_moves(self, hexes, value):
+        [_hex.set_is_move(value=value) for _hex in hexes]
+
+    def activate_hexes_path(self, hexes, value):
+        [_hex.set_is_path(value=value) for _hex in hexes]
+
+    def activate_hexes_attack(self, hexes, value):
+        [_hex.set_is_attack(value=value) for _hex in hexes]
+
+    def clear_activate_hexes(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                self.board[y][x].set_is_move(False)
+                self.board[y][x].set_is_attack(False)
 
     def diap(self, a, n):
         max_it = sum([x * 6 for x in range(1, n + 1)])
@@ -202,7 +231,7 @@ class Board:
                 if self.hex_distance(a, self.board[y][x]) <= n:
                     result.append(self.board[y][x])
                     max_it -= 1
-        self.activate_hexes(result, True)
+        # self.activate_hexes(result, True)
         return result
 
     def find_way(self, a, b):
@@ -222,7 +251,7 @@ class Board:
             if self.board[ry][rx] in way:
                 ry += (y_b - y_a) // abs(y_b - y_a)
             way.append(self.board[ry][rx])
-        self.activate_hexes(way, value=True)
+        self.activate_hexes_path(way, value=True)
         return way
 
     def set_image(self, x, y, image):

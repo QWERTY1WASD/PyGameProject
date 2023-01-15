@@ -18,7 +18,7 @@ class BaseUnit(pygame.sprite.Sprite):
         constants.SUPPORT_TRUCK_2[0]: load_image(constants.SUPPORT_TRUCK_2[1]),
     }
 
-    def __init__(self, team, hex, image, health, attack_radius, attack_damage, moves, board):
+    def __init__(self, team, hex, board, image, health, attack_radius, attack_damage, moves):
         super().__init__()
         self.team = team  # Принадлежность к команде
         self.hex = hex
@@ -35,8 +35,13 @@ class BaseUnit(pygame.sprite.Sprite):
         self.board = board
         self.dead = False  # Жива ли пешка
 
-    def move_image(self, move):
-        self.rect.move_ip(move)
+    def move_diap(self):
+        diap = self.board.diap(self.hex, self.moves)
+        self.board.activate_hexes_moves(diap, True)
+
+    def attack_diap(self):
+        diap = self.board.diap(self.hex, self.moves)
+        self.board.activate_hexes_attack(diap, True)
 
     def move(self, b):
         if self.moves <= 0 or self.dead:
@@ -49,6 +54,7 @@ class BaseUnit(pygame.sprite.Sprite):
         self.hex.container = None
         self.hex = b
         self.hex.container = unit
+        return way
 
     def check_attack(self):  # Возвращает список клеток, которые можно атаковать
         out = []
@@ -75,3 +81,56 @@ class BaseUnit(pygame.sprite.Sprite):
         self.hex.container = None
 
 
+class Infantry(BaseUnit):
+    def __init__(self, team, hex, board, image, health=100, attack_radius=5,
+                 attack_damage=25, moves=8):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+        self.type = "INFANTRY"
+
+    def attack(self, enemy):
+        if self.moves <= 0:
+            return
+        baff = 1
+        if enemy.type == "TANK":
+            baff = 0.1
+        enemy.change_health(-int(self.attack_damage * baff))
+
+
+class AntiTanksInfantry(BaseUnit):
+    def __init__(self, team, hex, board, image, health=50, attack_radius=7,
+                 attack_damage=15, moves=6):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+        self.type = "ANTI TANKS INFANTRY"
+
+    def attack(self, enemy):
+        if self.moves <= 0:
+            return
+        baff = 1
+        if enemy.type == "TANK":
+            baff = 3
+        enemy.change_health(-int(self.attack_damage * baff))
+
+
+class Tank(BaseUnit):
+    def __init__(self, team, hex, board, image, health=250, attack_radius=6,
+                 attack_damage=50, moves=12):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+        self.type = "TANK"
+
+    def attack(self, enemy):
+        if self.moves <= 0:
+            return
+        baff = 1
+        if "INFANTRY" in enemy.type:
+            baff = 0.7
+        enemy.change_health(-int(self.attack_damage * baff))
+
+
+class SupportTruck(BaseUnit):
+    def __init__(self, team, hex, board, image, health=100, attack_radius=0,
+                 attack_damage=0, moves=15):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+        self.type = "TANK"
+
+    def attack(self, enemy):
+        return
