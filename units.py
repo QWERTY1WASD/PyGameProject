@@ -31,6 +31,7 @@ class BaseUnit(pygame.sprite.Sprite):
         self.health = health
         self.attack_radius = attack_radius
         self.attack_damage = attack_damage
+        self.can_attack = True
 
         self.max_moves = moves
         self.moves = moves
@@ -65,12 +66,9 @@ class BaseUnit(pygame.sprite.Sprite):
         self.hex.container = unit
         return way
 
-    def new_turn(self):
-        self.moves = self.max_moves
-
     def check_attack(self):  # Возвращает список клеток, которые можно атаковать
         out = []
-        if self.dead:
+        if self.dead or not self.can_attack:
             return
         hexes = self.board.diap(self.hex, self.attack_radius)
         for i in hexes:
@@ -79,9 +77,14 @@ class BaseUnit(pygame.sprite.Sprite):
         return out
 
     def attack(self, enemy):
-        if self.moves <= 0:
+        if not self.can_attack:
             return
         enemy.change_health(-self.attack_damage)
+        self.can_attack = False
+
+    def new_turn(self):
+        self.moves = self.max_moves
+        self.can_attack = True
 
     def change_health(self, value):
         self.health += value

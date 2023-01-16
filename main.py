@@ -8,7 +8,6 @@ SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
-PLAYERS = [1, 2]
 UI_SIZE = UI_WIDTH, UI_HEIGHT = 50, 50
 
 turn = 0  # Количество ходов
@@ -20,9 +19,13 @@ clock = pygame.time.Clock()
 score = [0, 0]  # Score system for 1 and 2 players
 
 
-def change_turn():
+def change_turn(units_1, units_2):
     global turn
     turn = (turn + 1) % 2
+    if turn % 2 == 0:
+        [u.new_turn() for u in units_1]
+    else:
+        [u.new_turn() for u in units_2]
 
 
 class Tile(pygame.sprite.Sprite):
@@ -33,23 +36,30 @@ class Tile(pygame.sprite.Sprite):
 
 
 class UI:
-    COLOR = (50, 50, 50)
-    TRIANGLE_COLOR = (204, 204, 204)
+    COLOR_1_player = (210, 210, 210)
+    COLOR_2_player = (235, 25, 25)
+    COLOR = (35, 35, 35)
     OFFSET = 10
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, u_1, u_2):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.units_1 = u_1
+        self.units_2 = u_2
 
     def draw(self, screen):
+        if turn % 2 == 0:  # Если ходит первый игрок, то меняем цвет
+            color = self.COLOR_1_player
+        else:  # Иначе второй
+            color = self.COLOR_2_player
         pygame.draw.rect(screen, self.COLOR, self.rect, 0)
         points = [(WIDTH // 2 - self.OFFSET, self.height // 2 - self.OFFSET),
                   (WIDTH // 2 + self.OFFSET, self.height // 2),
                   (WIDTH // 2 - self.OFFSET, self.height // 2 + self.OFFSET)]
-        pygame.draw.polygon(screen, self.TRIANGLE_COLOR, points, 0)
+        pygame.draw.polygon(screen, color, points, 0)
 
     def get_click(self, mouse_pos):  # Проверяет, было ли нажатие на rect
         if self.rect.collidepoint(mouse_pos):
@@ -59,12 +69,10 @@ class UI:
     def on_click(self, event):
         mouse_pos = event.pos
         if self.get_click(mouse_pos) and event.button == pygame.BUTTON_LEFT:
-            change_turn()
-            print(turn)
+            change_turn(self.units_1, self.units_2)
 
 
 def main():
-    ui = UI((WIDTH - UI_WIDTH) // 2, 0, UI_WIDTH, UI_HEIGHT)
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
 
@@ -77,9 +85,10 @@ def main():
     board.set_x_offset(0)
     board.set_y_offset(0)
 
-    current_player = 1
     start_screen(screen)  # Вызов стартового окна
     units_1, units_2 = generate_level(board, map, images)
+
+    ui = UI((WIDTH - UI_WIDTH) // 2, 0, UI_WIDTH, UI_HEIGHT, units_1, units_2)
     for u in units_1:
         first_player_group.add(u)
     for u in units_2:
@@ -92,7 +101,7 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ui.on_click(event)
-                board.get_click(event, current_player)
+                board.get_click(event, turn)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             current_pos[1] -= 1 if current_pos[1] != 0 else 0
