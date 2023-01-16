@@ -77,7 +77,6 @@ class UI:
 def main():
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
-    anim_group = pygame.sprite.Group()
 
     filename = "level_01.txt"
     map, commands = load_level(filename)
@@ -121,11 +120,9 @@ def main():
         screen.fill(BACKGROUND_COLOR)
 
         board.draw_sprites(screen)
-        board.render(screen, anim_group)
+        board.render(screen)
         first_player_group.draw(screen)
         second_player_group.draw(screen)
-        anim_group.draw(screen)
-        anim_group.update()
         ui.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)

@@ -1,6 +1,5 @@
 import pygame
 import constants
-from animation import AnimatedSprite
 
 
 class BaseUnit(pygame.sprite.Sprite):
@@ -101,8 +100,7 @@ class BaseUnit(pygame.sprite.Sprite):
     def set_kill(self):  # Меняет значение self.is_dead на True, значение контейнера на None
         self.is_dead = True
         self.hex.container = None
-        anim = AnimatedSprite(*self.hex.get_top_left_coord(), self)
-        # super().kill()
+        super().kill()
 
 
 class Infantry(BaseUnit):

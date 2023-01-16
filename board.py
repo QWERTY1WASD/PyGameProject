@@ -1,7 +1,6 @@
 import pygame
 from pygame.math import Vector2
 import math
-from animation import AnimatedSprite
 
 
 class Hexagon:
@@ -23,7 +22,6 @@ class Hexagon:
         self.is_path = False
         self.is_attack = False
         self.container = None  # Содержание клетки: [None, "UNIT", ...] для удобства определения
-        self.anim = None
         self.sprite = pygame.sprite.Sprite()
 
     def set_is_move(self, value=None):
@@ -60,16 +58,11 @@ class Hexagon:
         return round(self.center_x + self.size * math.cos(angle_rad)) + offset_x, \
             round(self.center_y + self.size * math.sin(angle_rad)) + offset_y
 
-    def render(self, screen, anim_group, offset_x, offset_y):
+    def render(self, screen, offset_x, offset_y):
         self.points = [self.hex_corner(i, offset_x=offset_x, offset_y=offset_y) for i in range(6)]
         self.sprite.rect = self.get_top_left_coord()
         if self.container is not None:
             self.container.rect = self.get_top_left_coord()
-            if self.container.is_dead:
-                self.anim = AnimatedSprite(self.sprite.rect.x, self.sprite.rect.y, anim_group)
-                self.anim.set_fps(10)
-        if self.anim is not None:
-            self.anim.rect = self.get_top_left_coord()
         color = self.COLOR
         border = 2
         if self.is_move:
@@ -129,10 +122,10 @@ class Board:
     def draw_sprites(self, screen):
         self.tiles_group.draw(screen)
 
-    def render(self, screen: pygame.Surface, anim_group):
+    def render(self, screen: pygame.Surface):
         for y in range(self.height):
             for x in range(self.width):
-                self.board[y][x].render(screen, anim_group, self.offset_x, self.offset_y)
+                self.board[y][x].render(screen, self.offset_x, self.offset_y)
 
     # def on_hover(self, mouse_pos):
     #     hex = self.get_hex(mouse_pos)
