@@ -1,9 +1,11 @@
 import pygame
+
+import constants
 from utils import terminate, load_level, generate_level, load_tiles
 from screens import start_screen, end_screen
 from board import Board
 
-FPS = 60
+FPS = constants.FPS
 SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
@@ -75,6 +77,7 @@ class UI:
 def main():
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
+    anim_group = pygame.sprite.Group()
 
     filename = "level_01.txt"
     map, commands = load_level(filename)
@@ -118,9 +121,11 @@ def main():
         screen.fill(BACKGROUND_COLOR)
 
         board.draw_sprites(screen)
-        board.render(screen)
+        board.render(screen, anim_group)
         first_player_group.draw(screen)
         second_player_group.draw(screen)
+        anim_group.draw(screen)
+        anim_group.update()
         ui.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)

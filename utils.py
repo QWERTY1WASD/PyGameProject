@@ -47,6 +47,10 @@ def load_tiles(is_winter):
     return images
 
 
+def get_anim_sprite(filename):
+    return load_image(filename)
+
+
 def terminate():
     pygame.quit()
     sys.exit()

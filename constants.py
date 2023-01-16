@@ -1,3 +1,5 @@
+FPS = 60
+
 # *** MAP TILES ***
 
 BARRIER = ('#', 'barrier.png')

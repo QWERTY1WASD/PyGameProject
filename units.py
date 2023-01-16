@@ -1,5 +1,6 @@
 import pygame
 import constants
+from animation import AnimatedSprite
 
 
 class BaseUnit(pygame.sprite.Sprite):
@@ -36,7 +37,7 @@ class BaseUnit(pygame.sprite.Sprite):
         self.max_moves = moves
         self.moves = moves
         self.board = board
-        self.dead = False  # Жива ли пешка
+        self.is_dead = False  # Жива ли пешка
 
     def display_move_and_attack(self):
         diap_move = self.board.diap(self.hex, self.moves)
@@ -51,7 +52,7 @@ class BaseUnit(pygame.sprite.Sprite):
             self.board.activate_hexes_moves(diap_move, True)
 
     def move(self, b):
-        if self.moves <= 0 or self.dead:
+        if self.moves <= 0 or self.is_dead:
             return
         distance = self.board.hex_distance(self.hex, b)
         if distance > self.moves:
@@ -68,32 +69,40 @@ class BaseUnit(pygame.sprite.Sprite):
 
     def check_attack(self):  # Возвращает список клеток, которые можно атаковать
         out = []
-        if self.dead or not self.can_attack:
-            return
         hexes = self.board.diap(self.hex, self.attack_radius)
         for i in hexes:
             if i.container is not None and i.container.team != self.team:
-                out.append(i)
+                out.append(i.container)
         return out
 
     def attack(self, enemy):
-        if not self.can_attack:
+        print(enemy)
+        print(self.check_attack())
+        print(enemy in self.check_attack())
+        if not self.can_attack or enemy not in self.check_attack():
             return
-        enemy.change_health(-self.attack_damage)
+        enemy.change_health(-self.attack_damage * self.get_baff(enemy))
+        print(enemy.health)
         self.can_attack = False
 
     def new_turn(self):
         self.moves = self.max_moves
         self.can_attack = True
 
+    def get_baff(self, enemy):
+        baff = 1
+        return baff
+
     def change_health(self, value):
         self.health += value
         if self.health <= 0:
-            self.kill()
+            self.set_kill()
 
-    def kill(self):  # Меняет значение self.dead на True, значение контейнера на None
-        self.dead = True
+    def set_kill(self):  # Меняет значение self.is_dead на True, значение контейнера на None
+        self.is_dead = True
         self.hex.container = None
+        anim = AnimatedSprite(*self.hex.get_top_left_coord(), self)
+        # super().kill()
 
 
 class Infantry(BaseUnit):
@@ -102,13 +111,11 @@ class Infantry(BaseUnit):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "INFANTRY"
 
-    def attack(self, enemy):
-        if self.moves <= 0:
-            return
+    def get_baff(self, enemy):
         baff = 1
         if enemy.type == "TANK":
             baff = 0.1
-        enemy.change_health(-int(self.attack_damage * baff))
+        return baff
 
 
 class AntiTanksInfantry(BaseUnit):
@@ -117,13 +124,11 @@ class AntiTanksInfantry(BaseUnit):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "ANTI TANKS INFANTRY"
 
-    def attack(self, enemy):
-        if self.moves <= 0:
-            return
+    def get_baff(self, enemy):
         baff = 1
         if enemy.type == "TANK":
             baff = 3
-        enemy.change_health(-int(self.attack_damage * baff))
+        return baff
 
 
 class Tank(BaseUnit):
@@ -132,13 +137,11 @@ class Tank(BaseUnit):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
         self.type = "TANK"
 
-    def attack(self, enemy):
-        if self.moves <= 0:
-            return
+    def get_baff(self, enemy):
         baff = 1
         if "INFANTRY" in enemy.type:
             baff = 0.7
-        enemy.change_health(-int(self.attack_damage * baff))
+        return baff
 
 
 class SupportTruck(BaseUnit):
