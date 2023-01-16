@@ -4,12 +4,12 @@ from constants import *
 
 
 def start_screen(screen: pygame.Surface):
-    intro_text = [["BattleFront", "orange"], # Изменён режим подачи текста, 1)Текст 2)Его цвет
+    intro_text = [["BattleFront", "orange"],  # Изменён режим подачи текста, 1)Текст 2)Его цвет
                   ["Добро пожаловать на фронт, салага!", "gray"],
                   ["Скоро начнётся твоя миссия", "gray"],
                   ["Уничтожь врага, сохрани свои войска", "red"]]
 
-    fon = pygame.transform.scale(load_image(STARTMENU), screen.get_size()) # Константа
+    fon = pygame.transform.scale(load_image(STARTMENU), screen.get_size())  # Константа
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 70)
     text_coord = 80
@@ -20,10 +20,10 @@ def start_screen(screen: pygame.Surface):
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
-        intro_rect.x = (screen.get_size()[0] - intro_rect.size[0]) // 2 + 30 # Выравнивание по центру экрана
+        intro_rect.x = (screen.get_size()[0] - intro_rect.size[0]) // 2 + 30  # Выравнивание по центру экрана
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-    for i in range(2): # Прямоугольники для кнопок
+    for i in range(2):  # Прямоугольники для кнопок
         pygame.draw.rect(screen, "gray", (272, 400, 340, 100))
         pygame.draw.rect(screen, "gray", (272 * 3, 400, 340, 100))
 
@@ -40,11 +40,11 @@ def start_screen(screen: pygame.Surface):
         clock.tick(FPS)
 
 
-def end_screen(screen: pygame.Surface, score): # Полный аналог start_screen
+def end_screen(screen: pygame.Surface, score):  # Полный аналог start_screen
     outro_text = ["Итоги битвы:",
                   f"Очков набрано: {score}",
                   "Хоть битва и окончена...",
-                  "Но война ещё продолжается..."]
+                  "Война ещё продолжается..."]
 
     screen.fill((0, 0, 0))
     font = pygame.font.Font(None, 70)

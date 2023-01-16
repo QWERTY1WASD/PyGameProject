@@ -55,6 +55,8 @@ class BaseUnit(pygame.sprite.Sprite):
         distance = self.board.hex_distance(self.hex, b)
         if distance > self.moves:
             return
+        if b.container is not None:
+            return
         way = self.board.find_way(self.hex, b)
         unit = self.hex.container
         self.moves -= distance

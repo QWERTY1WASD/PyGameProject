@@ -9,14 +9,20 @@ TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
 PLAYERS = [1, 2]
+UI_SIZE = UI_WIDTH, UI_HEIGHT = 50, 50
 
-turn = 1  # Количество ходов
+turn = 0  # Количество ходов
 
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
 score = [0, 0]  # Score system for 1 and 2 players
+
+
+def change_turn():
+    global turn
+    turn = (turn + 1) % 2
 
 
 class Tile(pygame.sprite.Sprite):
@@ -26,7 +32,39 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
+class UI:
+    COLOR = (50, 50, 50)
+    TRIANGLE_COLOR = (204, 204, 204)
+    OFFSET = 10
+
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.COLOR, self.rect, 0)
+        points = [(WIDTH // 2 - self.OFFSET, self.height // 2 - self.OFFSET),
+                  (WIDTH // 2 + self.OFFSET, self.height // 2),
+                  (WIDTH // 2 - self.OFFSET, self.height // 2 + self.OFFSET)]
+        pygame.draw.polygon(screen, self.TRIANGLE_COLOR, points, 0)
+
+    def get_click(self, mouse_pos):  # Проверяет, было ли нажатие на rect
+        if self.rect.collidepoint(mouse_pos):
+            return True
+        return False
+
+    def on_click(self, event):
+        mouse_pos = event.pos
+        if self.get_click(mouse_pos) and event.button == pygame.BUTTON_LEFT:
+            change_turn()
+            print(turn)
+
+
 def main():
+    ui = UI((WIDTH - UI_WIDTH) // 2, 0, UI_WIDTH, UI_HEIGHT)
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
 
@@ -53,6 +91,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                ui.on_click(event)
                 board.get_click(event, current_player)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
@@ -73,6 +112,7 @@ def main():
         board.render(screen)
         first_player_group.draw(screen)
         second_player_group.draw(screen)
+        ui.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
     terminate()
