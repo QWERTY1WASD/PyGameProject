@@ -123,6 +123,8 @@ class Infantry(BaseUnit):
         baff = 1
         if enemy.type == "TANK":
             baff = 0.1
+        elif enemy.type == "INFANTRY":
+            baff = 1.5
         return baff
 
 

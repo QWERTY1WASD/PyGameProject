@@ -2,7 +2,6 @@ FPS = 60
 
 # *** MAP TILES ***
 
-BARRIER = ('#', 'barrier.png')
 GROUND = ('0', 'ground.png')
 FOREST = ('F', 'forest.png')
 STONE = ('C', 'stone.png')
