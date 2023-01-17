@@ -18,7 +18,8 @@ class BaseUnit(pygame.sprite.Sprite):
         constants.SUPPORT_TRUCK_2[0]: load_image(constants.SUPPORT_TRUCK_2[1]),
     }
 
-    def __init__(self, team, hex, board, image, health, attack_radius, attack_damage, moves):
+    def __init__(self, team, hex, board, image, health, attack_radius,
+                 attack_damage, moves, points):
         super().__init__()
         self.team = team  # Принадлежность к команде
         self.hex = hex
@@ -38,12 +39,13 @@ class BaseUnit(pygame.sprite.Sprite):
         self.board = board
         self.is_dead = False  # Жива ли пешка
 
+        self.points = points  # Содержит очки, которые может получить враждебный юнит при уничтожении этого
+
     def display_move_and_attack(self):
         diap_move = self.board.diap(self.hex, self.moves)
         diap_attack = self.board.diap(self.hex, self.attack_radius)
         if self.moves > self.attack_radius:
             self.board.activate_hexes_moves(diap_move, True)
-            # self.board.activate_hexes_moves(diap_attack, False)  # Не обязательно
             self.board.activate_hexes_attack(diap_attack, True)
         else:
             self.board.activate_hexes_attack(diap_attack, True)
@@ -75,14 +77,12 @@ class BaseUnit(pygame.sprite.Sprite):
         return out
 
     def attack(self, enemy):
-        print(enemy)
-        print(self.check_attack())
-        print(enemy in self.check_attack())
         if not self.can_attack or enemy not in self.check_attack():
             return
         enemy.change_health(-self.attack_damage * self.get_baff(enemy))
-        print(enemy.health)
         self.can_attack = False
+        if enemy.health <= 0:
+            self.points += enemy.points
 
     def new_turn(self):
         self.moves = self.max_moves
@@ -98,15 +98,18 @@ class BaseUnit(pygame.sprite.Sprite):
             self.set_kill()
 
     def set_kill(self):  # Меняет значение self.is_dead на True, значение контейнера на None
+        from animations import AnimatedSprite
         self.is_dead = True
         self.hex.container = None
+        anim = AnimatedSprite(*self.hex.get_top_left_coord())
+        self.board.set_anim(*self.hex.get_table_coords(), anim)
         super().kill()
 
 
 class Infantry(BaseUnit):
     def __init__(self, team, hex, board, image, health=100, attack_radius=3,
-                 attack_damage=25, moves=7):
-        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+                 attack_damage=25, moves=7, points=50):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "INFANTRY"
 
     def get_baff(self, enemy):
@@ -118,8 +121,8 @@ class Infantry(BaseUnit):
 
 class AntiTanksInfantry(BaseUnit):
     def __init__(self, team, hex, board, image, health=50, attack_radius=7,
-                 attack_damage=15, moves=8):
-        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+                 attack_damage=15, moves=8, points=100):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "ANTI TANKS INFANTRY"
 
     def get_baff(self, enemy):
@@ -131,8 +134,8 @@ class AntiTanksInfantry(BaseUnit):
 
 class Tank(BaseUnit):
     def __init__(self, team, hex, board, image, health=250, attack_radius=6,
-                 attack_damage=50, moves=10):
-        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+                 attack_damage=50, moves=10, points=250):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "TANK"
 
     def get_baff(self, enemy):
@@ -144,8 +147,8 @@ class Tank(BaseUnit):
 
 class SupportTruck(BaseUnit):
     def __init__(self, team, hex, board, image, health=100, attack_radius=0,
-                 attack_damage=0, moves=12):
-        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves)
+                 attack_damage=0, moves=12, points=100):
+        super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "TANK"
 
     def attack(self, enemy):

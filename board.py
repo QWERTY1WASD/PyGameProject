@@ -22,6 +22,7 @@ class Hexagon:
         self.is_path = False
         self.is_attack = False
         self.container = None  # Содержание клетки: [None, "UNIT", ...] для удобства определения
+        self.anim = None
         self.sprite = pygame.sprite.Sprite()
 
     def set_is_move(self, value=None):
@@ -59,10 +60,9 @@ class Hexagon:
             round(self.center_y + self.size * math.sin(angle_rad)) + offset_y
 
     def render(self, screen, offset_x, offset_y):
+        coord = self.get_top_left_coord()
         self.points = [self.hex_corner(i, offset_x=offset_x, offset_y=offset_y) for i in range(6)]
-        self.sprite.rect = self.get_top_left_coord()
-        if self.container is not None:
-            self.container.rect = self.get_top_left_coord()
+        self.sprite.rect = coord
         color = self.COLOR
         border = 2
         if self.is_move:
@@ -75,6 +75,15 @@ class Hexagon:
             border = 0
             color = self.ATTACK_COLOR
         pygame.draw.polygon(screen, color, self.points, border)
+        if self.container is not None:
+            self.container.rect = coord
+            pygame.draw.rect(
+                screen, 'red',
+                (*coord, self.size * (self.container.health / self.container.max_health), 15), 0
+            )
+            pygame.draw.rect(screen, 'black', (*coord, self.size, 15), 2)
+        if self.anim is not None:
+            self.anim.rect = coord
 
     def get_width(self):
         return self.width
@@ -97,6 +106,7 @@ class Board:
         self.offset_y = offset_y
         self.a, self.b = None, None
         self.tiles_group = pygame.sprite.Group()
+        self.anim_group = pygame.sprite.Group()
         self.current_unit = None
 
         self.board = []
@@ -271,6 +281,15 @@ class Board:
     def set_unit(self, x, y, unit):
         h = self.board[y][x]
         h.container = unit
+
+    def set_anim(self, x, y, anim):
+        h = self.board[y][x]
+        h.anim = anim
+        self.anim_group.add(h.anim)
+
+    def draw_anim(self, screen):
+        self.anim_group.draw(screen)
+        self.anim_group.update()
 
     def move_board(self, x, y):
         self.offset_x += x

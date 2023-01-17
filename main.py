@@ -1,7 +1,7 @@
 import pygame
 
 import constants
-from utils import terminate, load_level, generate_level, load_tiles
+from utils import terminate, load_level, generate_level, load_tiles, load_image
 from screens import start_screen, end_screen
 from board import Board
 
@@ -104,6 +104,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ui.on_click(event)
                 board.get_click(event, turn)
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             current_pos[1] -= 1 if current_pos[1] != 0 else 0
@@ -117,12 +118,13 @@ def main():
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             current_pos[0] += 1 if current_pos[0] != len(map[0]) // 3 else 0
             board.set_x_offset(-current_pos[0] * TILE_HEIGHT)
-        screen.fill(BACKGROUND_COLOR)
 
+        screen.fill(BACKGROUND_COLOR)
         board.draw_sprites(screen)
         board.render(screen)
         first_player_group.draw(screen)
         second_player_group.draw(screen)
+        board.draw_anim(screen)
         ui.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)

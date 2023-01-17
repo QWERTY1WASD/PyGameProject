@@ -12,6 +12,12 @@ FLAG = ('A', 'flag.png')
 BUILDING_01 = ('B', 'building_01.png')
 BUILDING_02 = ('V', 'building_02.png')
 
+# *** Animations sheets ***
+
+ANIM = "boom.png"
+
+# ***
+
 # ***  START, END SCREENS ***
 
 STARTMENU = "fon.jpg"
