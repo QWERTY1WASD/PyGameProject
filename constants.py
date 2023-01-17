@@ -12,16 +12,27 @@ FLAG = ('A', 'flag.png')
 BUILDING_01 = ('B', 'building_01.png')
 BUILDING_02 = ('V', 'building_02.png')
 
+
 # *** Animations sheets ***
 
 ANIM = "boom.png"
 
-# ***
+
+# *** OUR SOUNDTRACK ***
+
+SOVIET_MARCH = 'data/sounds/soviet_march.mp3'
+BOOM = 'data/sounds/vine-boom.mp3'
+
+INFANTRY_SOUND = 'data/sounds/gun.mp3'
+ANTI_TANK_SOUND = 'data/sounds/anti-tank.mp3'
+TANK_SOUND = 'data/sounds/tank.mp3'
+
 
 # ***  START, END SCREENS ***
 
 STARTMENU = "fon.jpg"
 ENDMENU = "fon.jpg"
+
 
 # *** UNITS **
 
@@ -36,5 +47,3 @@ SUPPORT_TRUCK_2 = ('M', 'support_truck_2.png')
 
 TANK_1 = ('T', 'tank_1.png')
 TANK_2 = ('G', 'tank_2.png')
-
-# ***

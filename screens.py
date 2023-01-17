@@ -5,8 +5,8 @@ from constants import *
 
 def start_screen(screen: pygame.Surface):
     intro_text = [["BattleFront", "orange"],  # Изменён режим подачи текста, 1)Текст 2)Его цвет
-                  ["Добро пожаловать на фронт, салага!", "gray"],
-                  ["Скоро начнётся твоя миссия", "gray"],
+                  ["Добро пожаловать на фронт, товарищ!", "gray"],
+                  ["Скоро начнётся твоя миссия", "white"],
                   ["Уничтожь врага, сохрани свои войска", "red"]]
 
     fon = pygame.transform.scale(load_image(STARTMENU), screen.get_size())  # Константа

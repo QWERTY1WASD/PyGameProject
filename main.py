@@ -19,6 +19,7 @@ screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
 score = [0, 0]  # Score system for 1 and 2 players
+sound_boom = pygame.mixer.Sound(constants.BOOM)
 
 
 def change_turn(units_1, units_2):
@@ -75,6 +76,10 @@ class UI:
 
 
 def main():
+    pygame.mixer.init()
+    pygame.mixer.music.load(constants.SOVIET_MARCH)
+    pygame.mixer.music.play(-1)
+
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
 

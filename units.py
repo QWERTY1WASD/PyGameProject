@@ -39,6 +39,8 @@ class BaseUnit(pygame.sprite.Sprite):
         self.board = board
         self.is_dead = False  # Жива ли пешка
 
+        self.sound = None
+
         self.points = points  # Содержит очки, которые может получить враждебный юнит при уничтожении этого
 
     def display_move_and_attack(self):
@@ -80,6 +82,8 @@ class BaseUnit(pygame.sprite.Sprite):
         if not self.can_attack or enemy not in self.check_attack():
             return
         enemy.change_health(-self.attack_damage * self.get_baff(enemy))
+        if self.sound is not None:
+            self.sound.play()
         self.can_attack = False
         if enemy.health <= 0:
             self.points += enemy.points
@@ -99,8 +103,10 @@ class BaseUnit(pygame.sprite.Sprite):
 
     def set_kill(self):  # Меняет значение self.is_dead на True, значение контейнера на None
         from animations import AnimatedSprite
+        from main import sound_boom
         self.is_dead = True
         self.hex.container = None
+        sound_boom.play()
         anim = AnimatedSprite(*self.hex.get_top_left_coord())
         self.board.set_anim(*self.hex.get_table_coords(), anim)
         super().kill()
@@ -111,6 +117,7 @@ class Infantry(BaseUnit):
                  attack_damage=25, moves=7, points=50):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "INFANTRY"
+        self.sound = pygame.mixer.Sound(constants.INFANTRY_SOUND)
 
     def get_baff(self, enemy):
         baff = 1
@@ -124,6 +131,7 @@ class AntiTanksInfantry(BaseUnit):
                  attack_damage=15, moves=8, points=100):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "ANTI TANKS INFANTRY"
+        self.sound = pygame.mixer.Sound(constants.ANTI_TANK_SOUND)
 
     def get_baff(self, enemy):
         baff = 1
@@ -137,6 +145,7 @@ class Tank(BaseUnit):
                  attack_damage=50, moves=10, points=250):
         super().__init__(team, hex, board, image, health, attack_radius, attack_damage, moves, points)
         self.type = "TANK"
+        self.sound = pygame.mixer.Sound(constants.TANK_SOUND)
 
     def get_baff(self, enemy):
         baff = 1
