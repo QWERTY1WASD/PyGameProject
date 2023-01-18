@@ -282,6 +282,15 @@ class Board:
         h = self.board[y][x]
         h.container = unit
 
+    def get_units(self, team):
+        result = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[y][x].container is not None \
+                        and self.board[y][x].container.team == team:
+                    result.append(self.board[y][x].container)
+        return result
+
     def set_anim(self, x, y, anim):
         h = self.board[y][x]
         h.anim = anim

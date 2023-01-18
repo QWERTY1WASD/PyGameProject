@@ -40,8 +40,9 @@ def start_screen(screen: pygame.Surface):
         clock.tick(FPS)
 
 
-def end_screen(screen: pygame.Surface, score):  # Полный аналог start_screen
-    outro_text = ["Итоги битвы:",
+def end_screen(screen: pygame.Surface, winner, score):  # Полный аналог start_screen
+    outro_text = [f"Победитель: игрок {winner}",
+                  "Итоги битвы:",
                   f"Очков набрано: {score}",
                   "Хоть битва и окончена...",
                   "Война ещё продолжается..."]

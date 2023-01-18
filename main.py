@@ -1,7 +1,7 @@
 import pygame
 
 import constants
-from utils import terminate, load_level, generate_level, load_tiles, load_image
+from utils import terminate, load_level, generate_level, load_tiles
 from screens import start_screen, end_screen
 from board import Board
 
@@ -15,6 +15,7 @@ UI_SIZE = UI_WIDTH, UI_HEIGHT = 50, 50
 turn = 0  # Количество ходов
 
 pygame.init()
+# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
@@ -25,6 +26,12 @@ sound_boom = pygame.mixer.Sound(constants.BOOM)
 def change_turn(units_1, units_2):
     global turn
     turn = (turn + 1) % 2
+    if len(units_1) == 0:
+        end_screen(screen, 2, sum([u.get_points() for u in units_2]))
+        terminate()
+    elif len(units_2) == 0:
+        end_screen(screen, 1, sum([u.get_points() for u in units_1]))
+        terminate()
     if turn % 2 == 0:
         [u.new_turn() for u in units_1]
     else:
@@ -63,6 +70,10 @@ class UI:
                   (WIDTH // 2 + self.OFFSET, self.height // 2),
                   (WIDTH // 2 - self.OFFSET, self.height // 2 + self.OFFSET)]
         pygame.draw.polygon(screen, color, points, 0)
+
+    def set_units(self, u_1, u_2):
+        self.units_1 = u_1
+        self.units_2 = u_2
 
     def get_click(self, mouse_pos):  # Проверяет, было ли нажатие на rect
         if self.rect.collidepoint(mouse_pos):
@@ -104,9 +115,10 @@ def main():
     running = True
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                ui.set_units(board.get_units(0), board.get_units(1))
                 ui.on_click(event)
                 board.get_click(event, turn)
 
@@ -115,13 +127,13 @@ def main():
             current_pos[1] -= 1 if current_pos[1] != 0 else 0
             board.set_y_offset(-current_pos[1] * TILE_HEIGHT)
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            current_pos[1] += 1 if current_pos[1] != len(map) // 3 else 0
+            current_pos[1] += 1 if current_pos[1] != len(map) - len(map) // 4 else 0
             board.set_y_offset(-current_pos[1] * TILE_HEIGHT)
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             current_pos[0] -= 1 if current_pos[0] != 0 else 0
             board.set_x_offset(-current_pos[0] * TILE_HEIGHT)
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            current_pos[0] += 1 if current_pos[0] != len(map[0]) // 3 else 0
+            current_pos[0] += 1 if current_pos[0] != len(map[0]) - len(map[0]) // 4 else 0
             board.set_x_offset(-current_pos[0] * TILE_HEIGHT)
 
         screen.fill(BACKGROUND_COLOR)

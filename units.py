@@ -86,7 +86,10 @@ class BaseUnit(pygame.sprite.Sprite):
             self.sound.play()
         self.can_attack = False
         if enemy.health <= 0:
-            self.points += enemy.points
+            self.points += enemy.get_points()
+
+    def get_points(self):
+        return self.points
 
     def new_turn(self):
         self.moves = self.max_moves
