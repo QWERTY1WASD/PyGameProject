@@ -1,5 +1,4 @@
 import pygame
-
 import constants
 from utils import terminate, load_level, generate_level, load_tiles
 from screens import start_screen, end_screen
@@ -21,6 +20,8 @@ pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
 score = [0, 0]  # Score system for 1 and 2 players
 sound_boom = pygame.mixer.Sound(constants.BOOM)
+
+end_screen(screen, 1, 2)
 
 
 def change_turn(units_1, units_2):
