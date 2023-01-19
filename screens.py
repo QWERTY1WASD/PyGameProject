@@ -1,4 +1,6 @@
 import pygame
+
+import constants
 from utils import load_image, terminate
 from constants import *
 
@@ -10,6 +12,11 @@ def get_click(self, mouse_pos):
 
 
 def start_screen(screen: pygame.Surface):
+    BUTTON_SIZE = 250, 250
+    OFFSET = 100
+
+    w, h = screen.get_size()
+
     intro_text = [["BattleFront", "white"],  # Изменён режим подачи текста, 1)Текст 2)Его цвет
                   ["Добро пожаловать на фронт, товарищ!", "gray"],
                   ["Скоро начнётся твоя миссия"],
@@ -29,11 +36,20 @@ def start_screen(screen: pygame.Surface):
         intro_rect.x = (screen.get_size()[0] - intro_rect.size[0]) // 2 + 30  # Выравнивание по центру экрана
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-    for i in range(2):  # Прямоугольники для кнопок
-        start_btn = pygame.Rect(272, 400, 340, 100)
-        btn_2 = pygame.Rect(272, 400, 340, 100)
-        pygame.draw.rect(screen, "gray", (272, 400, 340, 100))
-        pygame.draw.rect(screen, "gray", (272 * 3, 400, 340, 100))
+
+    btn_1_rect = pygame.Rect(w // 2 - BUTTON_SIZE[0] - OFFSET, h // 2 - 50, *BUTTON_SIZE)
+    btn_2_rect = pygame.Rect(w // 2 + OFFSET, h // 2 - 50, *BUTTON_SIZE)
+    pygame.draw.rect(screen, "gray", btn_1_rect)
+    pygame.draw.rect(screen, "gray", btn_2_rect)
+
+    text_1 = font.render('1', 1, 'black')  # Кнопки и текст к ним
+    text_2 = font.render('2', 1, 'black')
+
+    coords_1 = btn_1_rect.move(OFFSET * 1.15, OFFSET)
+    coords_2 = btn_2_rect.move(OFFSET * 1.15, OFFSET)
+
+    screen.blit(text_1, coords_1)
+    screen.blit(text_2, coords_2)
 
     FPS = 60
     clock = pygame.time.Clock()
@@ -42,10 +58,13 @@ def start_screen(screen: pygame.Surface):
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if start_btn.collidepoint(pygame.mouse.get_pos()):
-                    return True
-                elif btn_2.collidepoint(pygame.mouse.get_pos()):
-                    pass  # Без понятия, как у тебя включается второй уровень
+                if btn_1_rect.collidepoint(pygame.mouse.get_pos()):
+                    return constants.lvl_1
+                elif btn_2_rect.collidepoint(pygame.mouse.get_pos()):
+                    return constants.lvl_2
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            terminate()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -76,7 +95,7 @@ def update_end_screen(screen, winner, score, text_cords):
     return text_cords
 
 
-def end_screen(screen: pygame.Surface, winner, score):  # Полный аналог start_screen
+def end_screen(screen: pygame.Surface, winner, score):
     FPS = 60
     clock = pygame.time.Clock()
     text_cords = screen.get_size()[1]

@@ -1,5 +1,11 @@
 FPS = 60
 
+# *** LEVELS ***
+
+lvl_1 = "level_01.txt"
+lvl_2 = "level_02.txt"
+
+
 # *** MAP TILES ***
 
 GROUND = ('0', 'ground.png')

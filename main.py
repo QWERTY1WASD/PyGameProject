@@ -5,7 +5,6 @@ from screens import start_screen, end_screen
 from board import Board
 
 FPS = constants.FPS
-SIZE = WIDTH, HEIGHT = 1360, 720
 TILE_WIDTH = TILE_HEIGHT = 50
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = 26
@@ -14,13 +13,15 @@ UI_SIZE = UI_WIDTH, UI_HEIGHT = 50, 50
 turn = 0  # Количество ходов
 
 pygame.init()
-# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-screen = pygame.display.set_mode(SIZE)
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode(SIZE)
+
+SIZE = WIDTH, HEIGHT = screen.get_size()
+
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
 score = [0, 0]  # Score system for 1 and 2 players
 sound_boom = pygame.mixer.Sound(constants.BOOM)
-
 
 
 def change_turn(units_1, units_2):
@@ -91,10 +92,11 @@ def main():
     pygame.mixer.music.load(constants.SOVIET_MARCH)
     pygame.mixer.music.play(-1)
 
+    filename = start_screen(screen)  # Вызов стартового окна
+
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
 
-    filename = "level_01.txt"
     map, commands = load_level(filename)
     is_winter = True if 'is_winter' in commands else False
     images = load_tiles(is_winter)
@@ -103,7 +105,6 @@ def main():
     board.set_x_offset(0)
     board.set_y_offset(0)
 
-    start_screen(screen)  # Вызов стартового окна
     units_1, units_2 = generate_level(board, map, images)
 
     ui = UI((WIDTH - UI_WIDTH) // 2, 0, UI_WIDTH, UI_HEIGHT, units_1, units_2)
@@ -115,7 +116,7 @@ def main():
     running = True
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
+            if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ui.set_units(board.get_units(0), board.get_units(1))
@@ -123,6 +124,8 @@ def main():
                 board.get_click(event, turn)
 
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            running = False
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             current_pos[1] -= 1 if current_pos[1] != 0 else 0
             board.set_y_offset(-current_pos[1] * TILE_HEIGHT)
