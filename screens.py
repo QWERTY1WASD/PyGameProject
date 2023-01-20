@@ -69,13 +69,8 @@ def start_screen(screen: pygame.Surface):
         clock.tick(FPS)
 
 
-def update_end_screen(screen, winner, score, text_cords):
+def update_end_screen(screen, outro_text, text_cords):
     TEXT_SIZE = 293
-    outro_text = [[f"Победитель: {winner}", "gold"],
-                  ["Итоги битвы:", "gray"],
-                  [f"Очков набрано: {score}", "white"],
-                  ["Хоть битва и окончена...", "white"],
-                  ["Война ещё продолжается...", "red"]]
 
     font = pygame.font.Font(None, 70)
     cords = 80
@@ -99,6 +94,13 @@ def end_screen(screen: pygame.Surface, winner, score):
     FPS = 60
     clock = pygame.time.Clock()
     text_cords = screen.get_size()[1]
+    outro_text = [[f"Победитель: {winner}", "gold"],
+                  ["Итоги битвы:", "gray"],
+                  [f"Очков набрано: {score}", "white"],
+                  ["Хоть битва и окончена...", "white"],
+                  ["Война ещё продолжается...", "red"]]
+    with open("statistic.txt", 'w', encoding='utf-8') as f:
+        print('\n'.join([text[0] for text in outro_text]), file=f)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -106,6 +108,6 @@ def end_screen(screen: pygame.Surface, winner, score):
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
                 terminate()
-        text_cords = update_end_screen(screen, winner, score, text_cords)
+        text_cords = update_end_screen(screen, outro_text, text_cords)
         pygame.display.flip()
         clock.tick(FPS)

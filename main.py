@@ -20,7 +20,6 @@ SIZE = WIDTH, HEIGHT = screen.get_size()
 
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
-score = [0, 0]  # Score system for 1 and 2 players
 sound_boom = pygame.mixer.Sound(constants.BOOM)
 
 
@@ -90,6 +89,7 @@ class UI:
 def main():
     pygame.mixer.init()
     pygame.mixer.music.load(constants.SOVIET_MARCH)
+    pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
     filename = start_screen(screen)  # Вызов стартового окна
