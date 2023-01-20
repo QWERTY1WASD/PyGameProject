@@ -5,34 +5,31 @@ from screens import start_screen, end_screen
 from board import Board
 
 FPS = constants.FPS
-TILE_WIDTH = TILE_HEIGHT = 50
+TILE_WIDTH = TILE_HEIGHT = constants.TILE_SIZE
 BACKGROUND_COLOR = (0, 0, 0)
-HEX_SIZE = 26
-UI_SIZE = UI_WIDTH, UI_HEIGHT = 50, 50
+HEX_SIZE = constants.HEX_SIZE
+UI_SIZE = UI_WIDTH, UI_HEIGHT = constants.UI_SIZE
 
-turn = 0  # Количество ходов
+TURN = constants.TURN
 
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-# screen = pygame.display.set_mode(SIZE)
-
 SIZE = WIDTH, HEIGHT = screen.get_size()
-
 pygame.display.set_caption('BattleFront')
 clock = pygame.time.Clock()
 sound_boom = pygame.mixer.Sound(constants.BOOM)
 
 
 def change_turn(units_1, units_2):
-    global turn
-    turn = (turn + 1) % 2
+    global TURN
+    TURN = (TURN + 1) % 2
     if len(units_1) == 0:
         end_screen(screen, 2, sum([u.get_points() for u in units_2]))
         terminate()
     elif len(units_2) == 0:
         end_screen(screen, 1, sum([u.get_points() for u in units_1]))
         terminate()
-    if turn % 2 == 0:
+    if TURN % 2 == 0:
         [u.new_turn() for u in units_1]
     else:
         [u.new_turn() for u in units_2]
@@ -61,7 +58,7 @@ class UI:
         self.units_2 = u_2
 
     def draw(self, screen):
-        if turn % 2 == 0:  # Если ходит первый игрок, то меняем цвет
+        if TURN % 2 == 0:  # Если ходит первый игрок, то меняем цвет
             color = self.COLOR_1_player
         else:  # Иначе второй
             color = self.COLOR_2_player
@@ -121,7 +118,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ui.set_units(board.get_units(0), board.get_units(1))
                 ui.on_click(event)
-                board.get_click(event, turn)
+                board.get_click(event, TURN)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:

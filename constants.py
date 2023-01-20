@@ -1,4 +1,11 @@
 FPS = 60
+TURN = 0
+
+# *** BOARD SIZES ***
+
+TILE_SIZE = 50
+HEX_SIZE = 26
+UI_SIZE = 50, 50
 
 # *** LEVELS ***
 
