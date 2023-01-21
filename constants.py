@@ -35,8 +35,8 @@ TANK_SOUND = 'data/sounds/tank.mp3'
 
 # ***  START, END SCREENS ***
 
-STARTMENU = "fon.jpg"
-ENDMENU = "fon.jpg"
+STARTMENU = "fon.png"
+ENDMENU = "fon.png"
 
 
 # *** UNITS **
