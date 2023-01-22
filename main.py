@@ -86,7 +86,7 @@ class UI:
 def main():
     pygame.mixer.init()
     pygame.mixer.music.load(constants.SOVIET_MARCH)
-    pygame.mixer.music.set_volume(0)
+    pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
     filename = start_screen(screen)  # Вызов стартового окна
