@@ -1,5 +1,4 @@
 import pygame
-
 import constants
 from utils import load_image, terminate
 from constants import *

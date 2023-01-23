@@ -58,9 +58,9 @@ class UI:
         self.units_2 = u_2
 
     def draw(self, screen):
-        if TURN % 2 == 0:  # Если ходит первый игрок, то меняем цвет
+        if TURN % 2 == 0:
             color = self.COLOR_1_player
-        else:  # Иначе второй
+        else:
             color = self.COLOR_2_player
         pygame.draw.rect(screen, self.COLOR, self.rect, 0)
         points = [(WIDTH // 2 - self.OFFSET, self.height // 2 - self.OFFSET),
@@ -72,7 +72,7 @@ class UI:
         self.units_1 = u_1
         self.units_2 = u_2
 
-    def get_click(self, mouse_pos):  # Проверяет, было ли нажатие на rect
+    def get_click(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             return True
         return False
@@ -89,7 +89,7 @@ def main():
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
-    filename = start_screen(screen)  # Вызов стартового окна
+    filename = start_screen(screen)
 
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
@@ -135,6 +135,8 @@ def main():
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             current_pos[0] += 1 if current_pos[0] != len(map[0]) - len(map[0]) // 4 else 0
             board.set_x_offset(-current_pos[0] * TILE_HEIGHT)
+        if keys[pygame.K_TAB]:
+            pass  # Не знаю, как реализовать
 
         screen.fill(BACKGROUND_COLOR)
         board.draw_sprites(screen)
