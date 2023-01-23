@@ -1,4 +1,12 @@
 FPS = 60
+TURN = 0
+
+# *** BOARD SIZES ***
+
+TILE_SIZE = 50
+HEX_SIZE = 26
+UI_SIZE = 50, 50
+EXIT_BUTTON_SIZE = 40, 40
 
 # *** LEVELS ***
 
@@ -35,8 +43,8 @@ TANK_SOUND = 'data/sounds/tank.mp3'
 
 # ***  START, END SCREENS ***
 
-STARTMENU = "fon.jpg"
-ENDMENU = "fon.jpg"
+STARTMENU = "fon.png"
+ENDMENU = "fon.png"
 
 
 # *** UNITS **
