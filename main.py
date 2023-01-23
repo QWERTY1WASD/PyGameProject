@@ -9,6 +9,7 @@ TILE_WIDTH = TILE_HEIGHT = constants.TILE_SIZE
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = constants.HEX_SIZE
 UI_SIZE = UI_WIDTH, UI_HEIGHT = constants.UI_SIZE
+EXIT_BUTTON_SIZE = constants.EXIT_BUTTON_SIZE
 
 TURN = constants.TURN
 
@@ -58,9 +59,9 @@ class UI:
         self.units_2 = u_2
 
     def draw(self, screen):
-        if TURN % 2 == 0:  # Если ходит первый игрок, то меняем цвет
+        if TURN % 2 == 0:
             color = self.COLOR_1_player
-        else:  # Иначе второй
+        else:
             color = self.COLOR_2_player
         pygame.draw.rect(screen, self.COLOR, self.rect, 0)
         points = [(WIDTH // 2 - self.OFFSET, self.height // 2 - self.OFFSET),
@@ -72,7 +73,7 @@ class UI:
         self.units_1 = u_1
         self.units_2 = u_2
 
-    def get_click(self, mouse_pos):  # Проверяет, было ли нажатие на rect
+    def get_click(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             return True
         return False
@@ -89,7 +90,7 @@ def main():
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
-    filename = start_screen(screen)  # Вызов стартового окна
+    filename = start_screen(screen)
 
     first_player_group = pygame.sprite.Group()
     second_player_group = pygame.sprite.Group()
@@ -110,12 +111,16 @@ def main():
     for u in units_2:
         second_player_group.add(u)
 
+    exit_btn_rect = pygame.Rect((screen.get_size()[0] - EXIT_BUTTON_SIZE[0], 0), EXIT_BUTTON_SIZE)
+
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if exit_btn_rect.collidepoint(pygame.mouse.get_pos()):
+                    end_screen(screen, "НИКТО", 0)
                 ui.set_units(board.get_units(0), board.get_units(1))
                 ui.on_click(event)
                 board.get_click(event, TURN)
@@ -143,6 +148,7 @@ def main():
         second_player_group.draw(screen)
         board.draw_anim(screen)
         ui.draw(screen)
+        pygame.draw.rect(screen, "red", exit_btn_rect)
         pygame.display.flip()
         clock.tick(FPS)
     terminate()

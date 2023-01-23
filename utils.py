@@ -86,13 +86,13 @@ def generate_level(board, level, images):
         for x in range(board.width):
             if level[y][x] in FIRST_PLAYER_SIGNS:
                 if level[y][x] == constants.INFANTRY_1[0]:
-                    un = Infantry(0, board.board[y][x], board, level[y][x])
+                    un = Infantry(1, board.board[y][x], board, level[y][x])
                 elif level[y][x] == constants.ANTI_TANKS_INFANTRY_1[0]:
-                    un = AntiTanksInfantry(0, board.board[y][x], board, level[y][x])
+                    un = AntiTanksInfantry(1, board.board[y][x], board, level[y][x])
                 elif level[y][x] == constants.TANK_1[0]:
-                    un = Tank(0, board.board[y][x], board, level[y][x])
+                    un = Tank(1, board.board[y][x], board, level[y][x])
                 else:
-                    un = SupportTruck(0, board.board[y][x], board, level[y][x])
+                    un = SupportTruck(1, board.board[y][x], board, level[y][x])
                 board.set_unit(x, y, un)
                 units_1.append(un)
 
@@ -100,13 +100,13 @@ def generate_level(board, level, images):
                                            board.tiles_group))
             elif level[y][x] in SECOND_PLAYER_SIGNS:
                 if level[y][x] == constants.INFANTRY_2[0]:
-                    un = Infantry(1, board.board[y][x], board, level[y][x])
+                    un = Infantry(2, board.board[y][x], board, level[y][x])
                 elif level[y][x] == constants.ANTI_TANKS_INFANTRY_2[0]:
-                    un = AntiTanksInfantry(1, board.board[y][x], board, level[y][x])
+                    un = AntiTanksInfantry(2, board.board[y][x], board, level[y][x])
                 elif level[y][x] == constants.TANK_2[0]:
-                    un = Tank(1, board.board[y][x], board, level[y][x])
+                    un = Tank(2, board.board[y][x], board, level[y][x])
                 else:
-                    un = SupportTruck(1, board.board[y][x], board, level[y][x])
+                    un = SupportTruck(2, board.board[y][x], board, level[y][x])
                 board.set_unit(x, y, un)
                 units_2.append(un)
 
