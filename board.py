@@ -77,10 +77,16 @@ class Hexagon:
         pygame.draw.polygon(screen, color, self.points, border)
         if self.container is not None:
             self.container.rect = coord
-            pygame.draw.rect(
-                screen, 'red',
-                (*coord, self.size * (self.container.health / self.container.max_health), 15), 0
-            )
+            if self.container.team == 1:
+                pygame.draw.rect(
+                    screen, "red",
+                    (*coord, self.size * (self.container.health / self.container.max_health), 15), 0
+                )
+            elif self.container.team == 2:
+                pygame.draw.rect(
+                    screen, "blue",
+                    (*coord, self.size * (self.container.health / self.container.max_health), 15), 0
+                )
             pygame.draw.rect(screen, 'black', (*coord, self.size, 15), 2)
         if self.anim is not None:
             self.anim.rect = coord
