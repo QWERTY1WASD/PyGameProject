@@ -9,6 +9,7 @@ TILE_WIDTH = TILE_HEIGHT = constants.TILE_SIZE
 BACKGROUND_COLOR = (0, 0, 0)
 HEX_SIZE = constants.HEX_SIZE
 UI_SIZE = UI_WIDTH, UI_HEIGHT = constants.UI_SIZE
+EXIT_BUTTON_SIZE = constants.EXIT_BUTTON_SIZE
 
 TURN = constants.TURN
 
@@ -110,12 +111,16 @@ def main():
     for u in units_2:
         second_player_group.add(u)
 
+    exit_btn_rect = pygame.Rect((screen.get_size()[0] - EXIT_BUTTON_SIZE[0], 0), EXIT_BUTTON_SIZE)
+
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if exit_btn_rect.collidepoint(pygame.mouse.get_pos()):
+                    end_screen(screen, "НИКТО", 0)
                 ui.set_units(board.get_units(0), board.get_units(1))
                 ui.on_click(event)
                 board.get_click(event, TURN)
@@ -135,8 +140,6 @@ def main():
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             current_pos[0] += 1 if current_pos[0] != len(map[0]) - len(map[0]) // 4 else 0
             board.set_x_offset(-current_pos[0] * TILE_HEIGHT)
-        if keys[pygame.K_TAB]:
-            pass  # Не знаю, как реализовать
 
         screen.fill(BACKGROUND_COLOR)
         board.draw_sprites(screen)
@@ -145,6 +148,7 @@ def main():
         second_player_group.draw(screen)
         board.draw_anim(screen)
         ui.draw(screen)
+        pygame.draw.rect(screen, "red", exit_btn_rect)
         pygame.display.flip()
         clock.tick(FPS)
     terminate()
