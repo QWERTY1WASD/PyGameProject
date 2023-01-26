@@ -107,6 +107,10 @@ def end_screen(screen: pygame.Surface, winner, score):
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
                 terminate()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            terminate()
         text_cords = update_end_screen(screen, outro_text, text_cords)
         pygame.display.flip()
         clock.tick(FPS)

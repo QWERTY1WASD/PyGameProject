@@ -3,6 +3,7 @@ import constants
 from utils import terminate, load_level, generate_level, load_tiles
 from screens import start_screen, end_screen
 from board import Board
+from ui import UI
 
 FPS = constants.FPS
 TILE_WIDTH = TILE_HEIGHT = constants.TILE_SIZE
@@ -26,10 +27,8 @@ def change_turn(units_1, units_2):
     TURN = (TURN + 1) % 2
     if len(units_1) == 0:
         end_screen(screen, 2, sum([u.get_points() for u in units_2]))
-        terminate()
     elif len(units_2) == 0:
-        end_screen(screen, 1, sum([u.get_points() for u in units_1]))
-        terminate()
+        end_screen(screen, 2, sum([u.get_points() for u in units_2]))
     if TURN % 2 == 0:
         [u.new_turn() for u in units_1]
     else:
@@ -41,47 +40,6 @@ class Tile(pygame.sprite.Sprite):
         super().__init__(*group)
         self.image = images.get(image)
         self.rect = self.image.get_rect()
-
-
-class UI:
-    COLOR_1_player = (210, 210, 210)
-    COLOR_2_player = (235, 25, 25)
-    COLOR = (35, 35, 35)
-    OFFSET = 10
-
-    def __init__(self, x, y, width, height, u_1, u_2):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.units_1 = u_1
-        self.units_2 = u_2
-
-    def draw(self, screen):
-        if TURN % 2 == 0:
-            color = self.COLOR_1_player
-        else:
-            color = self.COLOR_2_player
-        pygame.draw.rect(screen, self.COLOR, self.rect, 0)
-        points = [(WIDTH // 2 - self.OFFSET, self.height // 2 - self.OFFSET),
-                  (WIDTH // 2 + self.OFFSET, self.height // 2),
-                  (WIDTH // 2 - self.OFFSET, self.height // 2 + self.OFFSET)]
-        pygame.draw.polygon(screen, color, points, 0)
-
-    def set_units(self, u_1, u_2):
-        self.units_1 = u_1
-        self.units_2 = u_2
-
-    def get_click(self, mouse_pos):
-        if self.rect.collidepoint(mouse_pos):
-            return True
-        return False
-
-    def on_click(self, event):
-        mouse_pos = event.pos
-        if self.get_click(mouse_pos) and event.button == pygame.BUTTON_LEFT:
-            change_turn(self.units_1, self.units_2)
 
 
 def main():
@@ -96,7 +54,7 @@ def main():
     second_player_group = pygame.sprite.Group()
 
     map, commands = load_level(filename)
-    is_winter = True if 'is_winter' in commands else False
+    is_winter = 'is_winter' in commands
     images = load_tiles(is_winter)
     current_pos = [0, 0]
     board = Board(len(map[0]), len(map), HEX_SIZE)
@@ -147,7 +105,7 @@ def main():
         first_player_group.draw(screen)
         second_player_group.draw(screen)
         board.draw_anim(screen)
-        ui.draw(screen)
+        ui.draw(screen, TURN)
         pygame.draw.rect(screen, "red", exit_btn_rect)
         pygame.display.flip()
         clock.tick(FPS)
